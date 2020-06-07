@@ -1,0 +1,63 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc"]
+  },
+  "source": {
+    "include": ["./src/", "./README.md"],
+    "includePattern": ".js$",
+    "excludePattern": "(./node_modules/|./WshModules/|./test/|.test.js)"
+  },
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "destination": "./docs/",
+    "encoding": "utf8",
+    "recurse": true,
+    "verbose": true,
+    "template": "./node_modules/docdash"
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true,
+    "idInHeadings": true
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true,
+      "includeDate": false,
+      "useLongnameInNav": true
+    }
+  },
+  "docdash": {
+    "static": true,
+    "sort": true,
+    "disqus": "",
+    "openGraph": {
+      "title": "WshOS",
+      "type": "website",
+      "image": "https://docs.tuckn.net/WshOS/img/openGraph-image.png",
+      "site_name": "@tuckn/WshOS",
+      "url": "https://docs.tuckn.net/WshOS"
+    },
+    "meta": {
+      "title": "WshOS",
+      "description": "Adds some useful functions that handles Windows OS into WSH (Windows Script Host).",
+      "keyword": "Windows, WSH, WSF, JScript, VBScript, modules, path"
+    },
+    "search": true,
+    "collapse": false,
+    "wrap": false,
+    "typedefs": true,
+    "removeQuotes": "none",
+    "menu": {
+      "Github repo": {
+        "href": "https://github.com/tuckn/WshOS",
+        "target": "_blank",
+        "class": "menu-item",
+        "id": "repository"
+      }
+    }
+  }
+}

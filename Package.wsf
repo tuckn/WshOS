@@ -1,0 +1,84 @@
+﻿<package>
+  <!-- dependencies -->
+  <resource id="WshJest">https://github.com/tuckn/WshJest.git</resource>
+  <resource id="WshPath">https://github.com/tuckn/WshPath.git</resource>
+
+  <!-- scripts: test -->
+  <job id = "test:WMI">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/WMI.test.js"></script>
+  </job>
+  <job id = "test:System">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/System.test.js"></script>
+  </job>
+  <job id = "test:Exec">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./src/Exec.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/Exec.test.js"></script>
+  </job>
+  <job id = "test:TaskScheduler">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./src/Exec.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.test.js"></script>
+  </job>
+  <job id = "test:Handler">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./src/Exec.js"></script>
+    <script language="JScript" src="./src/Handler.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/Handler.test.js"></script>
+  </job>
+
+  <!-- scripts: build -->
+  <job id = "./dist/module.js">
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./src/Exec.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.js"></script>
+    <script language="JScript" src="./src/Handler.js"></script>
+  </job>
+  <job id = "./dist/bundle.js">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./src/WMI.js"></script>
+    <script language="JScript" src="./src/System.js"></script>
+    <script language="JScript" src="./src/Exec.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.js"></script>
+    <script language="JScript" src="./src/Handler.js"></script>
+  </job>
+
+  <!-- scripts: test dist -->
+  <job id = "test:dist:module">
+    <script language="JScript" src="./WshModules/WshPath/dist/bundle.js"></script>
+    <script language="JScript" src="./dist/module.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/WMI.test.js"></script>
+    <script language="JScript" src="./src/System.test.js"></script>
+    <script language="JScript" src="./src/Exec.test.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.test.js"></script>
+    <script language="JScript" src="./src/Handler.test.js"></script>
+  </job>
+  <job id = "test:dist:bundle">
+    <script language="JScript" src="./dist/bundle.js"></script>
+    <script language="JScript" src="./WshModules/WshJest/dist/app.js"></script>
+    <script language="JScript" src="./src/WMI.test.js"></script>
+    <script language="JScript" src="./src/System.test.js"></script>
+    <script language="JScript" src="./src/Exec.test.js"></script>
+    <script language="JScript" src="./src/TaskScheduler.test.js"></script>
+    <script language="JScript" src="./src/Handler.test.js"></script>
+  </job>
+</package>
