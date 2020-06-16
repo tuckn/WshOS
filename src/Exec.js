@@ -175,9 +175,16 @@
    * os.convToCmdCommand('net', 'use /delete', { shell: true, closes: false });
    * // Returns: 'C:\Windows\System32\cmd.exe /S /K"net user /delete"'
    *
+   * // The 2nd argument: Array vs String
+   * // Array is escaped
    * os.convToCmdCommand('D:\\My Apps\\app.exe',
    *   ['/RegExp="^(A|The) $"', '-f', 'C:\\My Data\\img.doc']);
    * // Returns: '"D:\\My Apps\\app.exe" "/RegExp=\\"^^(A^|The) $\\"" -f "C:\\My Data\\img.doc"'
+   *
+   * // String is not escaped
+   * os.convToCmdCommand('D:\\My Apps\\app.exe',
+   *   '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc');
+   * // Returns: '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc'
    * @function convToCmdCommand
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.

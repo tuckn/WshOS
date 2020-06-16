@@ -93,14 +93,14 @@
    * Wsh.OS.getEnvVars();
    * // Returns: {
    * //   ALLUSERSPROFILE: "C:\ProgramData",
-   * //   APPDATA: "C:\Users\%UserName%\AppData\Roaming",
+   * //   APPDATA: "C:\Users\UserName\AppData\Roaming",
    * //   CommonProgramFiles: "C:\Program Files\Common Files",
    * //   CommonProgramFiles(x86): "C:\Program Files (x86)\Common Files",
    * //   CommonProgramW6432: "C:\Program Files\Common Files",
-   * //   COMPUTERNAME: "%CompName%",
+   * //   COMPUTERNAME: "MYPC0123",
    * //   ComSpec: "C:\WINDOWS\system32\cmd.exe",
    * //   HOMEDRIVE: "C:",
-   * //   HOMEPATH: "\Users\%UserName%",
+   * //   HOMEPATH: "\Users\UserName",
    * //   ... }
    * @function getEnvVars
    * @memberof Wsh.OS
@@ -132,14 +132,14 @@
    * console.dir(Wsh.OS.envVars);
    * // Returns: {
    * //   ALLUSERSPROFILE: "C:\ProgramData",
-   * //   APPDATA: "C:\Users\%UserName%\AppData\Roaming",
+   * //   APPDATA: "C:\Users\UserName\AppData\Roaming",
    * //   CommonProgramFiles: "C:\Program Files\Common Files",
    * //   CommonProgramFiles(x86): "C:\Program Files (x86)\Common Files",
    * //   CommonProgramW6432: "C:\Program Files\Common Files",
-   * //   COMPUTERNAME: "%CompName%",
+   * //   COMPUTERNAME: "MYPC0123",
    * //   ComSpec: "C:\WINDOWS\system32\cmd.exe",
    * //   HOMEDRIVE: "C:",
-   * //   HOMEPATH: "\Users\%UserName%",
+   * //   HOMEPATH: "\Users\UserName",
    * //   ... }
    * @name envVars
    * @memberof Wsh.OS
@@ -205,7 +205,7 @@
    *
    * @example
    * Wsh.OS.tmpdir();
-   * // Returns: 'C:\\Users\\%UserName%\\AppData\\Local\\Temp'
+   * // Returns: 'C:\\Users\\UserName\\AppData\\Local\\Temp'
    * @function tmpdir
    * @memberof Wsh.OS
    * @returns {string} - The path of directory for temporary.
@@ -222,13 +222,13 @@
    * var os = Wsh.OS; // Shorthand
    *
    * os.makeTmpPath();
-   * // Returns: 'C:\\Users\\%UserName%\\AppData\\Local\\Temp\\rad6E884.tmp'
+   * // Returns: 'C:\\Users\\UserName\\AppData\\Local\\Temp\\rad6E884.tmp'
    *
    * os.makeTmpPath();
-   * // Returns: 'C:\\Users\\%UserName%\\AppData\\Local\\Temp\\rad20D90.tmp'
+   * // Returns: 'C:\\Users\\UserName\\AppData\\Local\\Temp\\rad20D90.tmp'
    *
    * os.makeTmpPath('cache-', '.tmp');
-   * // Returns: 'C:\\Users\\%UserName%\\AppData\\Local\\Temp\\cache-radA8812.tmp.tmp'
+   * // Returns: 'C:\\Users\\UserName\\AppData\\Local\\Temp\\cache-radA8812.tmp.tmp'
    * @function makeTmpPath
    * @memberof Wsh.OS
    * @param {string} [prefix] - The prefix name of the path.
@@ -249,7 +249,7 @@
    * Returns the string path of the current user's home directory. Similar to {@link https://nodejs.org/api/os.html#os_os_homedir|Node.js OS}.
    *
    * @example
-   * Wsh.OS.homedir(); // Returns: 'C:\\Users\\%UserName%'
+   * Wsh.OS.homedir(); // Returns: 'C:\\Users\\UserName'
    * @function homedir
    * @memberof Wsh.OS
    * @returns {string} - The path of the current user's home directory.
@@ -295,8 +295,8 @@
    * // Returns: {
    * //   uid: -1,
    * //   gid: -1,
-   * //   username: '%UserName%',
-   * //   homedir: 'C:\Users\%UserName%',
+   * //   username: 'UserName',
+   * //   homedir: 'C:\Users\UserName',
    * //   shell: null }
    * @function userInfo
    * @memberof Wsh.OS
@@ -320,7 +320,7 @@
    * var os = Wsh.OS; // Shorthand
    *
    * var tmpPath = os.writeTempText('Foo Bar');
-   * // Returns: 'C:\\Users\\%UserName%\\AppData\\Local\\Temp\\rad91A81.tmp'
+   * // Returns: 'C:\\Users\\UserName\\AppData\\Local\\Temp\\rad91A81.tmp'
    * @function writeTempText
    * @memberof Wsh.OS
    * @param {string} txtData - Thes string data.

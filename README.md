@@ -58,9 +58,9 @@ for example,
 ```js
 var os = Wsh.OS; // Shorthand
 
-os.is64arch(); // Returns: true
-os.tmpdir(); // 'C:\\Users\\%UserName%\\AppData\\Local\\Temp'
-os.makeTmpPath(); // 'C:\\Users\\%UserName%\\AppData\\Local\\Temp\\rad6E884.tmp'
+os.is64arch(); // true
+os.tmpdir(); // 'C:\\Users\\YourUserName\\AppData\\Local\\Temp'
+os.makeTmpPath(); // 'C:\\Users\\UserName\\AppData\\Local\\Temp\\rad6E884.tmp'
 os.homedir(); // 'C:\\Users\\%UserName%'
 os.hostname(); // 'MYPC0123'
 os.cmdCodeset(); // 'shift_jis'
@@ -154,9 +154,6 @@ _.toZenkakuKana('もぅﾏﾁﾞ無理。'); // 'もぅマヂ無理'
 ```
 
 ## WshPath
-
-Now _.\MyScript.js_ (JScript ) can use the useful functions to handle paths.
-for example,
 
 ```js
 var path = Wsh.Path; // Shorthand
