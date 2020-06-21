@@ -18,7 +18,7 @@
    *
    * @namespace OS
    * @memberof Wsh
-   * @requires {@link https://github.com/tuckn/WshUtil|Path}
+   * @requires {@link https://github.com/tuckn/WshPath|tuckn/WshPath}
    */
   Wsh.OS = {};
 
