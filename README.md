@@ -153,7 +153,7 @@ _.toZenkakuKana('もぅﾏﾁﾞ無理。'); // 'もぅマヂ無理'
 // and so on...
 ```
 
-## WshPath
+### WshPath
 
 ```js
 var path = Wsh.Path; // Shorthand
