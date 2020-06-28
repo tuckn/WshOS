@@ -19,7 +19,7 @@ jobs:
       with:
         node-version: '12'
     - run: npm install
-    - run: npm docs
+    - run: npm run docs
     - run: npx insert-gtag tag-manager ./docs ${{ secrets.GTM_CONTAINER_ID }}
 
     - name: Update docs
