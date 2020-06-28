@@ -13,6 +13,7 @@ var path = Wsh.Path;
 var os = Wsh.OS;
 
 var isPureNumber = util.isPureNumber;
+var WSCRIPT = os.exefiles.wscript;
 
 var _cb = function (fn/* , args */) {
   var args = Array.from(arguments).slice(1);
@@ -64,15 +65,15 @@ describe('Handler', function () {
   // Process
 
   test('getProcessIDs', function () {
-    var exeName = path.basename(os.exefiles.wscript);
+    var exeName = path.basename(WSCRIPT);
 
-    var oExecA = os.exec(os.exefiles.wscript, [mockWsfGUI]);
+    var oExecA = os.exec(WSCRIPT, [mockWsfGUI]);
     var mockPIDA = oExecA.ProcessID;
 
-    var oExecB = os.exec(os.exefiles.wscript, [mockWsfGUI, '--type', 'B']);
+    var oExecB = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'B']);
     var mockPIDB = oExecB.ProcessID;
 
-    var oExecC = os.exec(os.exefiles.wscript, [mockWsfGUI, '--type', 'C']);
+    var oExecC = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'C']);
     var mockPIDC = oExecC.ProcessID;
 
     var pIDs = os.getProcessIDs(exeName);
@@ -91,20 +92,79 @@ describe('Handler', function () {
     });
   });
 
+  test('getProcessObjs', function () {
+    var exeName = path.basename(WSCRIPT);
+
+    var oExecA = os.exec(WSCRIPT, [mockWsfGUI]);
+    // var mockPIDA = oExecA.ProcessID;
+
+    var oExecB = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'B']);
+    // var mockPIDB = oExecB.ProcessID;
+
+    var oExecC = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'C']);
+    // var mockPIDC = oExecC.ProcessID;
+
+    var pObjs = os.getProcessObjs(exeName);
+
+    expect(pObjs.length >= 3).toBe(true);
+
+    pObjs.forEach(function (pObj) {
+      // @TODO want to do better
+      expect(pObj.Caption).toBeDefined();
+      expect(pObj.Caption).toBe(exeName);
+      expect(pObj.CommandLine).toBeDefined();
+      expect(pObj.ProcessId).toBeDefined();
+    });
+
+    oExecA.Terminate();
+    oExecB.Terminate();
+    oExecC.Terminate();
+
+    var errVals = [true, false, undefined, null, NaN, Infinity, [], {}];
+    errVals.forEach(function (val) {
+      expect(_cb(os.getProcessObjs, val)).toThrowError();
+    });
+  });
+
+  test('getProcessObj', function () {
+    var exeName = path.basename(WSCRIPT);
+
+    var oExecA = os.exec(WSCRIPT, [mockWsfGUI]);
+    var oExecB = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'B']);
+    var oExecC = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'C']);
+
+    var pObj = os.getProcessObj(exeName);
+
+    // @TODO want to do better
+    expect(pObj.Caption).toBeDefined();
+    expect(pObj.Caption).toBe(exeName);
+    expect(pObj.CommandLine).toBeDefined();
+    expect(pObj.ProcessId).toBeDefined();
+
+    oExecA.Terminate();
+    oExecB.Terminate();
+    oExecC.Terminate();
+
+    var errVals = [true, false, undefined, null, NaN, Infinity, [], {}];
+    errVals.forEach(function (val) {
+      expect(_cb(os.getProcessObj, val)).toThrowError();
+    });
+  });
+
   test('activateProcess', function () {
     expect('@TODO').toBe('tested');
   });
 
   test('terminateProcesses', function () {
-    var exeName = path.basename(os.exefiles.wscript);
+    var exeName = path.basename(WSCRIPT);
 
-    var oExecA = os.exec(os.exefiles.wscript, [mockWsfGUI]);
+    var oExecA = os.exec(WSCRIPT, [mockWsfGUI]);
     var mockPIDA = oExecA.ProcessID;
 
-    var oExecB = os.exec(os.exefiles.wscript, [mockWsfGUI, '--type', 'B']);
+    var oExecB = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'B']);
     var mockPIDB = oExecB.ProcessID;
 
-    var oExecC = os.exec(os.exefiles.wscript, [mockWsfGUI, '--type', 'C']);
+    var oExecC = os.exec(WSCRIPT, [mockWsfGUI, '--type', 'C']);
     var mockPIDC = oExecC.ProcessID;
 
     expect(os.terminateProcesses(mockPIDA)).toBe(undefined);

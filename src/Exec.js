@@ -2,9 +2,9 @@
 
 (function () {
   // Shorthands
-  var sh = Wsh.Shell;
   var CD = Wsh.Constants;
   var util = Wsh.Util;
+  var sh = Wsh.Shell;
   var shApp = Wsh.ShellApplication;
 
   var objAssign = Object.assign;

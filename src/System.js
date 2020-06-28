@@ -23,7 +23,7 @@
   };
 
   /**
-   * Windows system-specific end-of-line marker. Similar to {@link https://nodejs.org/api/os.html#os_os_eol|Node.js OS}.
+   * Windows system-specific end-of-line marker. Similar to {@link https://nodejs.org/api/os.html#os_os_eol|Node.js os.eol}.
    *
    * @example
    * Wsh.OS.EOL; // Returns: '\r\n'
@@ -35,7 +35,7 @@
 
   // os.platform {{{
   /**
-   * Returns win32 which is the string identifying Windows. Similar to {@link https://nodejs.org/api/os.html#os_os_platform|Node.js OS}.
+   * Returns win32 which is the string identifying Windows. Similar to {@link https://nodejs.org/api/os.html#os_os_platform|Node.js os.platform()}.
    *
    * @example
    * Wsh.OS.platform(); // Returns: 'win32'
@@ -126,7 +126,7 @@
 
   // os.envVars {{{
   /**
-   * Windows Environment Variables. `{@link Wsh.OS.getEnvVars}` execution result and the referer of `{@link https://docs.tuckn.net/WshProcess/process.html#.env|process.env}`.
+   * Windows Environment Variables. `{@link Wsh.OS.getEnvVars}` execution result and the referer of `{@link https://docs.tuckn.net/WshModeJs/process.html#.env|process.env}`.
    *
    * @example
    * console.dir(Wsh.OS.envVars);
@@ -152,7 +152,7 @@
 
   // os.arch {{{
   /**
-   * Returns the operating system CPU architecture. Similar to {@link https://nodejs.org/api/os.html#os_os_arch|Node.js OS}.
+   * Returns the operating system CPU architecture. Similar to {@link https://nodejs.org/api/os.html#os_os_arch|Node.js os.arch()}.
    *
    * @example
    * Wsh.OS.arch(); // Returns: 'amd64'
@@ -201,7 +201,7 @@
 
   // os.tmpdir {{{
   /**
-   * Returns the operating system's default directory for temporary files as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_tmpdir|Node.js OS}.
+   * Returns the operating system's default directory for temporary files as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_tmpdir|Node.js os.tmpdir()}.
    *
    * @example
    * Wsh.OS.tmpdir();
@@ -246,7 +246,7 @@
 
   // os.homedir {{{
   /**
-   * Returns the string path of the current user's home directory. Similar to {@link https://nodejs.org/api/os.html#os_os_homedir|Node.js OS}.
+   * Returns the string path of the current user's home directory. Similar to {@link https://nodejs.org/api/os.html#os_os_homedir|Node.js os.homedir()}.
    *
    * @example
    * Wsh.OS.homedir(); // Returns: 'C:\\Users\\UserName'
@@ -260,7 +260,7 @@
 
   // os.hostname {{{
   /**
-   * Returns the computer name of the operating system as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_hostname|Node.js OS}.
+   * Returns the computer name of the operating system as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_hostname|Node.js os.hostname()}.
    *
    * @example
    * Wsh.OS.hostname(); // Returns: 'MYPC0123'
@@ -274,7 +274,7 @@
 
   // os.type {{{
   /**
-   * Returns the operating system name. Similar to {@link https://nodejs.org/api/os.html#os_os_type|Node.js OS}.
+   * Returns the operating system name. Similar to {@link https://nodejs.org/api/os.html#os_os_type|Node.js os.type()}
    *
    * @example
    * Wsh.OS.type(); // Returns: 'Windows_NT'
@@ -288,7 +288,7 @@
 
   // os.userInfo {{{
   /**
-   * Returns information about the currently effective user. Similar to {@link https://nodejs.org/api/os.html#os_os_userinfo_options|Node.js OS}.
+   * Returns information about the currently effective user. Similar to {@link https://nodejs.org/api/os.html#os_os_userinfo_options|Node.js os.userInfo()}.
    *
    * @example
    * Wsh.OS.userInfo();
@@ -449,7 +449,7 @@
 
   // os.freemem {{{
   /**
-   * Returns the amount of free system memory in bytes as an integer. Similar to {@link https://nodejs.org/api/os.html#os_os_freemem|Node.js OS}.
+   * Returns the amount of free system memory in bytes as an integer. Similar to {@link https://nodejs.org/api/os.html#os_os_freemem|Node.js os.freemem()}.
    *
    * @example
    * Wsh.OS.freemem(); // Returns: 176822642
@@ -463,7 +463,7 @@
 
   // os.release {{{
   /**
-   * Returns the operating system as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_release|Node.js OS}.
+   * Returns the operating system as a string. Similar to {@link https://nodejs.org/api/os.html#os_os_release|Node.js os.release()}.
    *
    * @example
    * Wsh.OS.release(); // Returns: 10.0.18363
@@ -477,7 +477,7 @@
 
   // os.totalmem {{{
   /**
-   * Returns the total amount of system memory in bytes as an integer. Similar to {@link https://nodejs.org/api/os.html#os_os_totalmem|Node.js OS}.
+   * Returns the total amount of system memory in bytes as an integer. Similar to {@link https://nodejs.org/api/os.html#os_os_totalmem|Node.js os.totalmem()}.
    *
    * @example
    * Wsh.OS.release(); // Returns: 34276515840

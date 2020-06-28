@@ -2,6 +2,18 @@
 
 Adds some useful functions that handles Windows OS into WSH (Windows Script Host).
 
+## tuckn/Wsh series dependency
+
+[WshModeJs](https://github.com/tuckn/WshModeJs)  
+└─ [WshProcess](https://github.com/tuckn/WshProcess)  
+&emsp;&emsp;└─ [WshFileSystem](https://github.com/tuckn/WshFileSystem)  
+&emsp;&emsp;&emsp;&emsp;└─ WshOS - This repository  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPath](https://github.com/tuckn/WshPath)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshUtil](https://github.com/tuckn/WshUtil)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPolyfill](https://github.com/tuckn/WshPolyfill)  
+
+The upper layer module can use all the functions of the lower layer module.
+
 ## Operating environment
 
 Works on JScript in Windows.
@@ -110,97 +122,15 @@ os.deleteUser('MyUserName');
 Many other functions are added.
 See the [documentation](https://docs.tuckn.net/WshOS) for more details.
 
-And you can also use all functions of [WshPolyfill](https://github.com/tuckn/WshPolyfill), [WshUtil](https://github.com/tuckn/WshUtil) and [WshPath](https://github.com/tuckn/WshPath).
-for example,
-
-### WshPolyfill
-
-```js
-var array1 = [1, 4, 9, 16];
-var map1 = array1.map(function (x) {
-  return x * 2;
-});
-
-console.dir(map1);
-// Output: [2, 8, 18, 32]
-
-var strJson = JSON.stringify({ from: array1, to: map1 });
-console.log(strJson);
-// Output: '{"from":[1,4,9,16],"to":[2,8,18,32]}'
-
-// and so on...
-```
-
-### WshUtil
-
-```js
-var _ = Wsh.Util; // Shorthand
-
-// Check deep strict equality
-_.isEqual({ a: 'A', b: ['B'] }, { a: 'A', b: ['B'] }); // true
-_.isEqual({ a: 'A', b: ['B'] }, { a: 'A', b: ['b'] }); // false
-
-// Create a unique ID
-_.uuidv4(); // '9f1e53ba-3f08-4c9d-91c7-ad4226312f40'
-
-// Create a date string
-_.createDateString(); // '20200528T065424+0900'
-_.createDateString('yyyy-MM'); // '2020-05'
-
-// 半角カナを全角に変換
-_.toZenkakuKana('もぅﾏﾁﾞ無理。'); // 'もぅマヂ無理'
-
-// and so on...
-```
-
-### WshPath
-
-```js
-var path = Wsh.Path; // Shorthand
-
-path.dirname('C:\\My Data\\image.jpg'); // 'C:\\My Data'
-path.basename('C:\\foo\\bar\\baz\\quux.html'); // 'quux.html'
-path.extname('index.coffee.md'); // '.md'
-
-path.parse('C:\\home\\user\\dir\\file.txt');
-// Returns:
-// { root: 'C:\\',
-//   dir: 'C:\\home\\user\\dir',
-//   base: 'file.txt',
-//   ext: '.txt',
-//   name: 'file' };
-
-path.isAbsolute('C:\\My Data\\hoge.png'); // true
-path.isAbsolute('bar\\baz'); // false
-path.isAbsolute('.'); // false
-
-path.normalize('C:\\Git\\mingw64\\lib\\..\\etc\\.gitconfig');
-// Returns: 'C:\\Git\\mingw64\\etc\\.gitconfig'
-
-path.join(['mingw64\\lib', '..\\etc', '.gitconfig']);
-// Returns: 'mingw64\\etc\\.gitconfig'
-
-path.resolve(['mingw64\\lib', '..\\etc', '.gitconfig']);
-// Returns: '<Current Working Directory>\\mingw64\\etc\\.gitconfig'
-
-path.toUNC('C:\\foo\\bar.baz');
-// Returns: '\\\\<Your CompName>\\C$\\foo\\bar.baz'
-
-var from = 'C:\\MyApps\\Paint\\Gimp';
-var to = 'C:\\MyApps\\Converter\\ImageMagick\\convert.exe';
-path.relative(from, to);
-// Returns: '..\\..\\Converter\\ImageMagick\\convert.exe'
-
-// and so on...
-```
+And you can also use all functions of [tuckn/WshPolyfill](https://github.com/tuckn/WshPolyfill), [tuckn/WshUtil](https://github.com/tuckn/WshUtil) and [tuckn/WshPath](https://github.com/tuckn/WshPath).
 
 ## Documentation
 
 See all specifications [here](https://docs.tuckn.net/WshOS) and also below.
 
 - [WshPolyfill](https://docs.tuckn.net/WshPolyfill)
-- [WshUtil](https://docs.tuckn.net/WshUtil).
-- [WshPath](https://docs.tuckn.net/WshPath).
+- [WshUtil](https://docs.tuckn.net/WshUtil)
+- [WshPath](https://docs.tuckn.net/WshPath)
 
 ## License
 

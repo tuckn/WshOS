@@ -6,9 +6,9 @@
 /* globals expect: false */
 
 // Shorthand
-var sh = Wsh.Shell;
 var CD = Wsh.Constants;
 var util = Wsh.Util;
+var sh = Wsh.Shell;
 var fso = Wsh.FileSystemObject;
 var path = Wsh.Path;
 var os = Wsh.OS;

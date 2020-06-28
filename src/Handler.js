@@ -251,7 +251,7 @@
 
   // os.getProcessIDs {{{
   /**
-   * Get processes IDs that the specified process string.
+   * Gets processes IDs that the specified process string.
    *
    * @example
    * var getPIDs = Wsh.OS.getProcessIDs; // Shorthand
@@ -265,7 +265,7 @@
    * @memberof Wsh.OS
    * @param {(number|string)} processName - The PID or process name or full path.
    * @param {typeGetProcessesOptions} [options] - Optional parameters.
-   * @returns {Array} - The processes IDs
+   * @returns {Array} - The Array of processes ID.
    */
   os.getProcessIDs = function (processName, options) {
     var functionName = 'os.getProcessIDs';
@@ -278,6 +278,107 @@
     return sWbemObjSets.map(function (sWbemObjSet) {
       return sWbemObjSet.ProcessId;
     });
+  }; // }}}
+
+  // os.getProcessObjs {{{
+  /**
+   * Gets processes IDs that the specified process string.
+   *
+   * @example
+   * var getProcessObjs = Wsh.OS.getProcessObjs; // Shorthand
+   *
+   * var pIDs = getProcessObjs('Chrome.exe');
+   * // Returns: [33221, 22044, 43113, 42292, 17412]
+   *
+   * var pIDs = getPIDs('C:\\Program Files\\Git\\bin\\git.exe');
+   * // Returns: [1732, 4316]
+   * @function getProcessObjs
+   * @memberof Wsh.OS
+   * @param {(number|string)} processName - The PID or process name or full path.
+   * @param {typeGetProcessesOptions} [options] - Optional parameters.
+   * @returns {Array} - The processes IDs
+   */
+  os.getProcessObjs = function (processName, options) {
+    var functionName = 'os.getProcessObjs';
+    if (!isPureNumber(processName) && !isString(processName)) {
+      throwErrNonStr(functionName, processName);
+    }
+
+    var sWbemObjSets = os.WMI.getProcesses(processName, options);
+
+    return sWbemObjSets.map(function (sWbemObjSet) {
+      return os.WMI.toJsObject(sWbemObjSet);
+    });
+  }; // }}}
+
+  // os.getProcessObj {{{
+  /**
+   * Gets an Object matching the specified process ID or string.
+   *
+   * @example
+   * var getProcessObj = Wsh.OS.getProcessObj; // Shorthand
+   *
+   * var pObj = getProcessObj('wscript.exe');
+   * // Returns: {
+   * //   Caption: 'wscript.exe',
+   * //   CommandLine: 'C:\\Windows\\System32\\wscript.exe //nologo C:\\MockGUI.wsf',
+   * //   CreationClassName: 'Win32_Process',
+   * //   CreationDate: '20200628110828.532484+540',
+   * //   CSCreationClassName: 'Win32_ComputerSystem',
+   * //   CSName: 'MYCOMPNAME',
+   * //   Description: 'wscript.exe',
+   * //   ExecutablePath: 'C:\\Windows\\System32\\wscript.exe',
+   * //   ExecutionState: null,
+   * //   Handle: '5678',
+   * //   HandleCount: 241,
+   * //   InstallDate: null,
+   * //   KernelModeTime: '312500',
+   * //   MaximumWorkingSetSize: 1380,
+   * //   MinimumWorkingSetSize: 200,
+   * //   Name: 'wscript.exe',
+   * //   OSCreationClassName: 'Win32_OperatingSystem',
+   * //   OSName: 'Microsoft Windows 10 Pro|C:\\WINDOWS|\\Device\\Harddisk0\\Partition4',
+   * //   OtherOperationCount: '123',
+   * //   OtherTransferCount: '4567',
+   * //   PageFaults: 3462,
+   * //   PageFileUsage: 3260,
+   * //   ParentProcessId: 12628,
+   * //   PeakPageFileUsage: 3504,
+   * //   PeakVirtualSize: '2203497648128',
+   * //   PeakWorkingSetSize: 12892,
+   * //   Priority: 8,
+   * //   PrivatePageCount: '3338240',
+   * //   ProcessId: 7580,
+   * //   QuotaNonPagedPoolUsage: 15,
+   * //   QuotaPagedPoolUsage: 267,
+   * //   QuotaPeakNonPagedPoolUsage: 15,
+   * //   QuotaPeakPagedPoolUsage: 267,
+   * //   ReadOperationCount: '45',
+   * //   ReadTransferCount: '4631',
+   * //   SessionId: 1,
+   * //   Status: null,
+   * //   TerminationDate: null,
+   * //   ThreadCount: 11,
+   * //   UserModeTime: '0',
+   * //   VirtualSize: '2203497648128',
+   * //   WindowsVersion: '10.0.12345',
+   * //   WorkingSetSize: '13164544',
+   * //   WriteOperationCount: '0',
+   * //   WriteTransferCount: '0' }
+   * @function getProcessObj
+   * @memberof Wsh.OS
+   * @param {(number|string)} processName - The PID or process name or full path.
+   * @param {typeGetProcessesOptions} [options] - Optional parameters.
+   * @returns {object} - The Object of the processe.
+   */
+  os.getProcessObj = function (processName, options) {
+    var functionName = 'os.getProcessObj';
+    if (!isPureNumber(processName) && !isString(processName)) {
+      throwErrNonStr(functionName, processName);
+    }
+
+    var sWbemObjSet = os.WMI.getProcess(processName, options);
+    return os.WMI.toJsObject(sWbemObjSet);
   }; // }}}
 
   // os.activateProcess {{{
