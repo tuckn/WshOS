@@ -1,7 +1,7 @@
 {
   "name": "@tuckn/WshOS",
   "description": "Adds some useful functions that handles Windows OS into WSH (Windows Script Host).",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Tuckn <tuckn333+github@gmail.com>",
   "private": false,
   "license": "MIT",

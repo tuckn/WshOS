@@ -295,8 +295,11 @@
    * //   ...
    * // }, {
    * //   Caption: 'chrome.exe',
+   * //   CommandLine: ...
    * //   ...
    * // }, {
+   * //   Caption: 'chrome.exe',
+   * //   CommandLine: ...
    * //   ...
    * // }]
    *
@@ -375,7 +378,7 @@
    * @memberof Wsh.OS
    * @param {(number|string)} processName - The PID or process name or full path.
    * @param {typeGetProcessesOptions} [options] - Optional parameters.
-   * @returns {object} - The Object of the process.
+   * @returns {object|null} - The Object of the process.
    */
   os.getProcessObj = function (processName, options) {
     var functionName = 'os.getProcessObj';
@@ -384,7 +387,12 @@
     }
 
     var sWbemObjSet = os.WMI.getProcess(processName, options);
-    return os.WMI.toJsObject(sWbemObjSet);
+
+    try {
+      return os.WMI.toJsObject(sWbemObjSet);
+    } catch (e) {
+      return null; // When the process is not existing
+    }
   }; // }}}
 
   // os.activateProcess {{{

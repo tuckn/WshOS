@@ -120,6 +120,10 @@ describe('Handler', function () {
     oExecB.Terminate();
     oExecC.Terminate();
 
+    // Non existing process
+    expect(os.getProcessObjs(1)).toEqual([]);
+    expect(os.getProcessObjs('hoge.hoge')).toEqual([]);
+
     var errVals = [true, false, undefined, null, NaN, Infinity, [], {}];
     errVals.forEach(function (val) {
       expect(_cb(os.getProcessObjs, val)).toThrowError();
@@ -144,6 +148,10 @@ describe('Handler', function () {
     oExecA.Terminate();
     oExecB.Terminate();
     oExecC.Terminate();
+
+    // Non existing process
+    expect(os.getProcessObj(1)).toBeNull();
+    expect(os.getProcessObj('hoge.hoge')).toBeNull();
 
     var errVals = [true, false, undefined, null, NaN, Infinity, [], {}];
     errVals.forEach(function (val) {
