@@ -72,6 +72,26 @@ describe('WMI', function () {
     expect(isSolidArray(new VBArray(wmi0.BiosCharacteristics).toArray())).toBe(true);
   });
 
+  test('toJsObject', function () {
+    // Many sWBEM Object Set
+    var query = 'SELECT * FROM CIM_BIOSElement';
+    var sWbemObjSets = os.WMI.execQuery(query);
+    expect(_cb(os.WMI.toJsObject, sWbemObjSets)).toThrowError();
+
+    // Single sWBEM Object Set
+    sWbemObjSets.forEach(function (sWbemObjSet) {
+      var wmiObj = os.WMI.toJsObject(sWbemObjSet);
+      expect(isString(wmiObj.Name)).toBe(true);
+      expect(isString(wmiObj.Manufacturer)).toBe(true);
+      expect(isSolidArray(wmiObj.BiosCharacteristics)).toBe(true);
+      expect(isSolidArray(wmiObj.ListOfLanguages)).toBe(true);
+    });
+
+    [undefined, null, [], [1, 2, 3], {}, 'str', 123].forEach(function (errVal) {
+      expect(_cb(os.WMI.toJsObject, errVal)).toThrowError();
+    });
+  });
+
   test('toJsObjects', function () {
     var query = 'SELECT * FROM CIM_BIOSElement';
     var sWbemObjSets = os.WMI.execQuery(query);
@@ -83,6 +103,10 @@ describe('WMI', function () {
     expect(isString(wmiObjs[0].Manufacturer)).toBe(true);
     expect(isSolidArray(wmiObjs[0].BiosCharacteristics)).toBe(true);
     expect(isSolidArray(wmiObjs[0].ListOfLanguages)).toBe(true);
+
+    [undefined, null, {}, 'str', 123].forEach(function (errVal) {
+      expect(_cb(os.WMI.toJsObjects, errVal)).toThrowError();
+    });
   });
 
   test('getProcesses', function () {

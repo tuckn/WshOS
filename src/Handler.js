@@ -282,21 +282,29 @@
 
   // os.getProcessObjs {{{
   /**
-   * Gets processes IDs that the specified process string.
+   * Gets an Array of objects matching the specified process ID or string.
    *
    * @example
    * var getProcessObjs = Wsh.OS.getProcessObjs; // Shorthand
    *
-   * var pIDs = getProcessObjs('Chrome.exe');
-   * // Returns: [33221, 22044, 43113, 42292, 17412]
+   * var pObjs = getProcessObjs('chrome.exe');
+   * // Returns: [
+   * // {
+   * //   Caption: 'chrome.exe',
+   * //   CommandLine: ...
+   * //   ...
+   * // }, {
+   * //   Caption: 'chrome.exe',
+   * //   ...
+   * // }, {
+   * //   ...
+   * // }]
    *
-   * var pIDs = getPIDs('C:\\Program Files\\Git\\bin\\git.exe');
-   * // Returns: [1732, 4316]
    * @function getProcessObjs
    * @memberof Wsh.OS
    * @param {(number|string)} processName - The PID or process name or full path.
    * @param {typeGetProcessesOptions} [options] - Optional parameters.
-   * @returns {Array} - The processes IDs
+   * @returns {object[]} - The Array of objects of the process.
    */
   os.getProcessObjs = function (processName, options) {
     var functionName = 'os.getProcessObjs';
@@ -306,9 +314,7 @@
 
     var sWbemObjSets = os.WMI.getProcesses(processName, options);
 
-    return sWbemObjSets.map(function (sWbemObjSet) {
-      return os.WMI.toJsObject(sWbemObjSet);
-    });
+    return os.WMI.toJsObjects(sWbemObjSets);
   }; // }}}
 
   // os.getProcessObj {{{
@@ -369,7 +375,7 @@
    * @memberof Wsh.OS
    * @param {(number|string)} processName - The PID or process name or full path.
    * @param {typeGetProcessesOptions} [options] - Optional parameters.
-   * @returns {object} - The Object of the processe.
+   * @returns {object} - The Object of the process.
    */
   os.getProcessObj = function (processName, options) {
     var functionName = 'os.getProcessObj';
