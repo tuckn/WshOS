@@ -5,12 +5,14 @@ Adds some useful functions that handles Windows OS into WSH (Windows Script Host
 ## tuckn/Wsh series dependency
 
 [WshModeJs](https://github.com/tuckn/WshModeJs)  
-└─ [WshProcess](https://github.com/tuckn/WshProcess)  
-&emsp;&emsp;└─ [WshFileSystem](https://github.com/tuckn/WshFileSystem)  
-&emsp;&emsp;&emsp;&emsp;└─ WshOS - This repository  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPath](https://github.com/tuckn/WshPath)  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshUtil](https://github.com/tuckn/WshUtil)  
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPolyfill](https://github.com/tuckn/WshPolyfill)  
+└─ [WshNet](https://github.com/tuckn/WshNet)  
+&emsp;└─ [WshChildProcess](https://github.com/tuckn/WshChildProcess)  
+&emsp;&emsp;└─ [WshProcess](https://github.com/tuckn/WshProcess)  
+&emsp;&emsp;&emsp;&emsp;└─ [WshFileSystem](https://github.com/tuckn/WshFileSystem)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ WshOS - This repository  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPath](https://github.com/tuckn/WshPath)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshUtil](https://github.com/tuckn/WshUtil)  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;└─ [WshPolyfill](https://github.com/tuckn/WshPolyfill)
 
 The upper layer module can use all the functions of the lower layer module.
 
@@ -88,10 +90,10 @@ os.escapeForCmd('/RegExp="^(A|The) $"');
 
 var retObj2 = os.execSync('ping.exe', ['127.0.0.1']);
 console.log(retObj2);
-// Returns: {
+// Outputs: {
 //   exitCode: 0,
 //   stdout: <The result of ping 127.0.0.1>,
-//   stderr: '',
+//   stderr: ""
 //   error: false };
 
 os.run('notepad.exe', ['D:\\Test.txt'], { winStyle: 'activeMax' });

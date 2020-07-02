@@ -130,7 +130,7 @@
    *
    * @example
    * console.dir(Wsh.OS.envVars);
-   * // Returns: {
+   * // Outputs: {
    * //   ALLUSERSPROFILE: "C:\ProgramData",
    * //   APPDATA: "C:\Users\UserName\AppData\Roaming",
    * //   CommonProgramFiles: "C:\Program Files\Common Files",

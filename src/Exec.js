@@ -257,20 +257,20 @@
    *
    * // With the `shell` option
    * var oExec1 = os.exec('mkdir', 'D:\\Temp', { shell: true });
-   * console.log(oExec1.ExitCode); // Always 0
+   * console.log(oExec1.ExitCode); // 0 (always)
    *
    * while (oExec1.Status == 0) WScript.Sleep(300); // Waiting the finished
-   * console.log(oExec1.Status); // Returns: 1 -> Finished
+   * console.log(oExec1.Status); // 1 (It means finished)
    *
    * // Ex.2 Exe-file
    * var oExec2 = os.exec('ping.exe', ['127.0.0.1']);
-   * console.log(oExec2.ExitCode); // Always 0
+   * console.log(oExec2.ExitCode); // 0 (always)
    *
    * while (oExec2.Status == 0) WScript.Sleep(300); // Waiting the finished
-   * console.log(oExec2.Status); // Returns: 1 -> Finished
+   * console.log(oExec2.Status); // 1 (It means finished)
    *
    * var result = oExec2.StdOut.ReadAll();
-   * console.log(result); // Returns: The result of ping 127.0.0.1
+   * console.log(result); // Outputs the result of ping 127.0.0.1
    * @function exec
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
@@ -319,20 +319,20 @@
    *
    * // With the `shell` option
    * var retObj1 = os.execSync('mkdir', 'D:\\Temp', { shell: true });
-   * console.log(retObj1);
-   * // Returns: {
+   * console.dir(retObj1);
+   * // Outputs: {
    * //   exitCode: 0,
-   * //   stdout: '',
-   * //   stderr: '',
+   * //   stdout: "",
+   * //   stderr: "",
    * //   error: false };
    *
    * // Ex2. Exe-file
    * var retObj2 = os.execSync('ping.exe', ['127.0.0.1']);
-   * console.log(retObj2);
-   * // Returns: {
+   * console.dir(retObj2);
+   * // Outputs: {
    * //   exitCode: 0,
    * //   stdout: <The result of ping 127.0.0.1>,
-   * //   stderr: '',
+   * //   stderr: "",
    * //   error: false };
    * @function execSync
    * @memberof Wsh.OS
@@ -481,7 +481,7 @@
    *   shell: true, winStyle: 'hidden'
    * });
    *
-   * console.log(retVal1); // The number of the result code
+   * console.log(retVal1); // Outputs the number of the result code
    * console.log(fso.FolderExists('D:\\Temp')); // true
    *
    * // Ex2. Exe-file
@@ -491,7 +491,7 @@
    *
    * // Waits until the notepad process is finished
    *
-   * console.log(retVal2); // The number of the result code
+   * console.log(retVal2); // Outputs the number of the result code
    * @function runSync
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.

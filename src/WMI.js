@@ -48,7 +48,7 @@
   };
 
   /**
-   * The wrapper object for functions to handle WMI (Windows Management Instrumentation. WBEM for Windows).
+   * The wrapper object for functions to handle {@link https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page|WMI} (Windows Management Instrumentation. WBEM for Windows).
    *
    * @namespace WMI
    * @memberof Wsh.OS
@@ -56,7 +56,7 @@
   os.WMI = {};
 
   /**
-   * An SWbemObjectSet object is a collection of SWbemObject objects. {@link https://docs.microsoft.com/en-us/windows/win32/wmisdk/swbemobjectset|Microsoft Docs}
+   * An SWbemObjectSet object is a collection of {@link https://docs.microsoft.com/en-us/windows/win32/wmisdk/swbemobjectset|SWbemObjectSet object}
    *
    * @name sWbemObjectSet
    */
@@ -89,7 +89,7 @@
    *   var iRetVal = sWbemObjSet.Terminate();
    *   console.log('Terminated it with returning value ' + iRetVal);
    * });
-   * // Returns:
+   * // Outputs:
    * //   ProcessID: 8356
    * //   ExecutablePath: C:\WINDOWS\system32\notepad.exe
    * //   Terminated it with returning value 0
@@ -175,7 +175,7 @@
    * var sWbemObjSets = wmi.execQuery('SELECT * FROM CIM_BIOSElement');
    * var biosElements = wmi.toJsObject(sWbemObjSets[0]);
    * console.dir(biosElements.ListOfLanguages);
-   * // Returns: [
+   * // Outputs: [
    * //   "en|US|iso8859-1",
    * //   "fr|FR|iso8859-1",
    * //   "zh|TW|unicode",
@@ -243,7 +243,7 @@
    * var sWbemObjSets = wmi.execQuery('SELECT * FROM CIM_BIOSElement');
    * var wmiObjs = wmi.toJsObjects(sWbemObjSets);
    * console.dir(wmiObjs[0].ListOfLanguages);
-   * // Returns: [
+   * // Outputs: [
    * //   "en|US|iso8859-1",
    * //   "fr|FR|iso8859-1",
    * //   "zh|TW|unicode",
@@ -297,7 +297,7 @@
    *     console.error('Failed to terminate. Already terminated?');
    *   }
    * });
-   * // Returns:
+   * // Outputs:
    * //   ProcessID: 8356
    * //   Handle: 18012
    * //   CreationDate: 20200217042344.517814+540
@@ -417,7 +417,7 @@
    * console.log('ParentProcessId: ' + sWbemObjSet.ParentProcessId);
    * var iRetVal = sWbemObjSet.Terminate();
    * console.log('Terminated it with returning value ' + iRetVal);
-   * // Returns:
+   * // Outputs:
    * //   ProcessID: 19220
    * //   ParentProcessId: 160624
    * //   Terminated it with returning value 0
@@ -453,7 +453,7 @@
    * console.log('Caption: ' + sWbemObjSet.Caption);
    * console.log('FileSystem: ' + sWbemObjSet.FileSystem);
    * console.log('FreeSpace: ' + sWbemObjSet.FreeSpace);
-   * // Returns:
+   * // Outputs:
    * //   DeviceID: C:
    * //   Caption: C:
    * //   FileSystem: NTFS
@@ -510,7 +510,7 @@
    *   console.log('Domain: ' + sWbemObjSet.Domain);
    *   console.log('Status: ' + sWbemObjSet.Status);
    * });
-   * // Returns:
+   * // Outputs:
    * //   AccountType: 512
    * //   Caption: COMPNAME\Administrator
    * //   Name: Administrator
@@ -547,7 +547,7 @@
    * console.log('Name: ' + thisProcess.Name);
    * console.log('CommandLine: ' + thisProcess.CommandLine);
    * console.log('ParentProcessId: ' + thisProcess.ParentProcessId);
-   * // Returns:
+   * // Outputs:
    * //   ProcessID: 23576
    * //   Caption: cscript.exe
    * //   Name: cscript.exe
