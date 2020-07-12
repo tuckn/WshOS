@@ -444,7 +444,7 @@
    * while (!fso.FolderExists('D:\\Temp')) { // Waiting the created
    *   WScript.Sleep(300);
    * }
-   * console.log(fso.FolderExists('D:\\Temp')); // true
+   * console.dir(fso.FolderExists('D:\\Temp')); // true
    *
    * // Ex2. Exe-file
    * os.run('notepad.exe', ['D:\\Test.txt'], { winStyle: 'activeMax' });
@@ -482,7 +482,7 @@
    * });
    *
    * console.log(retVal1); // Outputs the number of the result code
-   * console.log(fso.FolderExists('D:\\Temp')); // true
+   * console.dir(fso.FolderExists('D:\\Temp')); // true
    *
    * // Ex2. Exe-file
    * var retVal2 = os.runSync('notepad.exe', ['D:\\Test.txt'], {

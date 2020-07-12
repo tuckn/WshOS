@@ -1,6 +1,6 @@
 # WshOS
 
-Adds some useful functions that handles Windows OS into WSH (Windows Script Host).
+Adds useful functions that handles Windows OS into WSH (Windows Script Host).
 
 ## tuckn/Wsh series dependency
 
@@ -66,7 +66,7 @@ This allows the following functions to be used in _.\MyScript.js_.
 
 ## Usage
 
-Now _.\MyScript.js_ (JScript ) can use the useful functions to handle paths.
+Now _.\MyScript.js_ (JScript) can use the useful functions to handle paths.
 for example,
 
 ```js
@@ -89,7 +89,7 @@ os.escapeForCmd('/RegExp="^(A|The) $"');
 // Returns: '"/RegExp=\\"^^(A^|The) $\\""'
 
 var retObj2 = os.execSync('ping.exe', ['127.0.0.1']);
-console.log(retObj2);
+console.dir(retObj2);
 // Outputs: {
 //   exitCode: 0,
 //   stdout: <The result of ping 127.0.0.1>,

@@ -43,7 +43,7 @@
     },
     "meta": {
       "title": "WshOS",
-      "description": "Adds some useful functions that handles Windows OS into WSH (Windows Script Host).",
+      "description": "Adds useful functions that handles Windows OS into WSH (Windows Script Host).",
       "keyword": "Windows, WSH, WSF, JScript, VBScript, modules, path"
     },
     "search": true,
