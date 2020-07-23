@@ -7,10 +7,11 @@
   var fso = Wsh.FileSystemObject;
   var path = Wsh.Path;
 
-  var objAssign = Object.assign;
+  var objAdd = Object.assign;
   var insp = util.inspect;
   var isPureNumber = util.isPureNumber;
   var isString = util.isString;
+  var obtain = util.obtainPropVal;
 
   var os = Wsh.OS;
 
@@ -40,14 +41,14 @@
    * @param {string} taskName - The Task name to create.
    * @param {string} cmdStr - The command to execute.
    * @param {(string[]|string)} [args] - The arguments for the command.
-   * @param {object} [options] - See {@link Wsh.OS.convToCmdCommand}.
+   * @param {typeShRunOptions} [options] - Optional Parameters.
    * @throws {string} - If an error occurs during command execution, or if the command exits with a value other than 0.
    * @throws {string} - If an error occurs during command execution, or if the command exits with a value other than 0.
-   * @returns {void}
+   * @returns {void|string} - If isDryRun is true, returns string.
    */
   os.Task.create = function (taskName, cmdStr, args, options) {
-    var functionName = 'os.Task.create';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+    var FN = 'os.Task.create';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     /**
      * タスク登録時、↓ /ST 00:00 などにすると、StdErrに"警告: /ST が現時刻よりも早いため、タスクは実行されない可能性があります。"と出力されダルいので23:59にする
@@ -67,22 +68,25 @@ SchTasks.exe /Create /F /TN myTask /SC ONCE /ST 23:59 /IT /RL LIMITED /TR "C:\my
   stdout: "成功: スケジュール タスク "myTask" は正しく作成されました。
   stderr: ""
        */
-      var iRetVal = os.runSync(
+      var retVal = os.runSync(
         mainCmd,
         argsStr,
-        objAssign({}, options, {
+        objAdd({}, options, {
           shell: false,
           escapes: false,
           winStyle: 'hidden'
         })
       );
 
-      if (iRetVal === CD.runs.ok) return;
+      var isDryRun = obtain(options, 'isDryRun', false);
+      if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
 
-      throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
+      if (retVal === CD.runs.ok) return;
+
+      throw new Error('Error [ExitCode is not Ok] "' + retVal + '"\n');
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  mainCmd: "' + mainCmd + '"\n  argsStr: "' + argsStr + '"');
     }
   }; // }}}
@@ -96,14 +100,17 @@ SchTasks.exe /Create /F /TN myTask /SC ONCE /ST 23:59 /IT /RL LIMITED /TR "C:\my
    * @function exists
    * @memberof Wsh.OS.Task
    * @param {string} taskName - The Task name.
-   * @returns {boolean} - If the task is existing returns true.
+   * @param {object} [options] - Optional Parameters.
+   * @param {boolean} [options.isDryRun=false] - No execute, returns the string of command.
+   * @returns {boolean|string} - If the task is existing returns true. If isDryRun is true, returns string.
    */
-  os.Task.exists = function (taskName) {
-    var functionName = 'os.Task.exists';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+  os.Task.exists = function (taskName, options) {
+    var FN = 'os.Task.exists';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     var mainCmd = os.exefiles.schtasks;
     var args = ['/Query', '/XML', '/TN', taskName];
+    var isDryRun = obtain(options, 'isDryRun', false);
 
     try {
       /**
@@ -117,14 +124,18 @@ SchTasks.exe /Query /XML /TN myTask
   stdout: ""
   stderr: "エラー: 指定されたファイルが見つかりません。"
        */
-      var iRetVal = os.runSync(mainCmd, args, {
+      var retVal = os.runSync(mainCmd, args, {
         shell: false,
-        winStyle: 'hidden'
+        winStyle: 'hidden',
+        isDryRun: isDryRun
       });
-      return iRetVal === CD.runs.ok;
+
+      if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
+      return retVal === CD.runs.ok;
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -137,14 +148,17 @@ SchTasks.exe /Query /XML /TN myTask
    * @function run
    * @memberof Wsh.OS.Task
    * @param {string} taskName - The Task name
-   * @returns {void}
+   * @param {object} [options] - Optional Parameters.
+   * @param {boolean} [options.isDryRun=false] - No execute, returns the string of command.
+   * @returns {void|string} - If isDryRun is true, returns string.
    */
-  os.Task.run = function (taskName) {
-    var functionName = 'os.Task.run';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+  os.Task.run = function (taskName, options) {
+    var FN = 'os.Task.run';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     var mainCmd = os.exefiles.schtasks;
     var args = ['/Run', '/I', '/TN', taskName];
+    var isDryRun = obtain(options, 'isDryRun', false);
 
     /**
      * スケジュール実行は即座に0を返すので、正常に起動したかどうかは判断できない。sh.Runのwaitの指定は意味がない。StdOutを取得するなど別の方法が必要
@@ -156,10 +170,18 @@ SchTasks.exe /Query /XML /TN myTask
   stderr: ""
      */
     try {
-      os.run(mainCmd, args, { shell: false, winStyle: 'hidden' });
+      var retVal = os.run(mainCmd, args, {
+        shell: false,
+        winStyle: 'hidden',
+        isDryRun: isDryRun
+      });
+
+      if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
+      return;
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -172,17 +194,20 @@ SchTasks.exe /Query /XML /TN myTask
    * @function del
    * @memberof Wsh.OS.Task
    * @param {string} taskName - The Task name.
+   * @param {object} [options] - Optional Parameters.
+   * @param {boolean} [options.isDryRun=false] - No execute, returns the string of command.
    * @throws {string} - If an error occurs during command execution, or if the command exits with a value other than 0.
-   * @returns {void}
+   * @returns {void|string} - If isDryRun is true, returns string.
    */
-  os.Task.del = function (taskName) {
-    var functionName = 'os.Task.del';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+  os.Task.del = function (taskName, options) {
+    var FN = 'os.Task.del';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     if (!os.Task.exists(taskName)) return;
 
     var mainCmd = os.exefiles.schtasks;
     var args = ['/Delete', '/F', '/TN', taskName];
+    var isDryRun = obtain(options, 'isDryRun', false);
 
     try {
       /**
@@ -196,16 +221,20 @@ SchTasks.exe /Delete /F /TN myTask
   stdout: "",
   stderr: "エラー: 指定されたファイルが見つかりません。"
        */
-      var iRetVal = os.runSync(mainCmd, args, {
+      var retVal = os.runSync(mainCmd, args, {
         shell: false,
-        winStyle: 'hidden'
+        winStyle: 'hidden',
+        isDryRun: isDryRun
       });
-      if (iRetVal === CD.runs.ok) return;
 
-      throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
+      if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
+      if (retVal === CD.runs.ok) return;
+
+      throw new Error('Error [ExitCode is not Ok] "' + retVal + '"\n');
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -219,11 +248,13 @@ SchTasks.exe /Delete /F /TN myTask
    * @memberof Wsh.OS.Task
    * @param {string} taskName - The task name.
    * @param {number} [msecTimeOut=10000] - default: 10sec.
-   * @returns {void}
+   * @param {object} [options] - Optional Parameters.
+   * @param {boolean} [options.isDryRun=false] - No execute, returns the string of command.
+   * @returns {void|string} - If isDryRun is true, returns string.
    */
-  os.Task.ensureToDelete = function (taskName, msecTimeOut) {
-    var functionName = 'os.Task.ensureToDelete';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+  os.Task.ensureToDelete = function (taskName, msecTimeOut, options) {
+    var FN = 'os.Task.ensureToDelete';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     if (!os.Task.exists(taskName)) return;
 
@@ -231,7 +262,11 @@ SchTasks.exe /Delete /F /TN myTask
 
     do {
       try {
-        os.Task.del(taskName)
+        var retVal = os.Task.del(taskName, options);
+
+        var isDryRun = obtain(options, 'isDryRun', false);
+        if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
         return;
       } catch (e) {
         WScript.Sleep(100);
@@ -240,7 +275,7 @@ SchTasks.exe /Delete /F /TN myTask
     } while (msecTimeOut > 0);
 
     throw new Error('Error [Delete Task] "' + taskName + '"\n'
-      + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+      + '  at ' + FN + ' (' + MODULE_TITLE + ')');
   }; // }}}
 
   // os.Task.ensureToCreate {{{
@@ -257,9 +292,10 @@ SchTasks.exe /Delete /F /TN myTask
    * @param {string} taskName - The task name to create.
    * @param {string} mainCmd - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments for the command.
-   * @param {object} [options] - {boolean} [shell=false]
+   * @param {typeShRunOptions} [options] - Optional Parameters.
    * @param {number} [msecTimeOut=10000] - default: 10sec.
-   * @returns {void}
+   * @param {boolean} [options.isDryRun=false] - No execute, returns the string of command.
+   * @returns {void|string} - If isDryRun is true, returns string.
    */
   os.Task.ensureToCreate = function (
     taskName,
@@ -268,8 +304,8 @@ SchTasks.exe /Delete /F /TN myTask
     options,
     msecTimeOut
   ) {
-    var functionName = 'os.Task.ensureToCreate';
-    if (!isString(taskName)) throwErrNonStr(functionName, taskName);
+    var FN = 'os.Task.ensureToCreate';
+    if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     // If existing, delete the task
     if (os.Task.exists(taskName)) os.Task.ensureToDelete(taskName);
@@ -281,7 +317,12 @@ SchTasks.exe /Delete /F /TN myTask
 
     do {
       try {
-        if (os.Task.exists(taskName)) return;
+        var retVal = os.Task.exists(taskName, options);
+
+        var isDryRun = obtain(options, 'isDryRun', false);
+        if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
+        if (retVal) return;
       } catch (e) {
         WScript.Sleep(100);
         msecTimeOut -= 100;
@@ -289,7 +330,7 @@ SchTasks.exe /Delete /F /TN myTask
     } while (msecTimeOut > 0);
 
     throw new Error('Error: [Create the task(TimeOut)] ' + taskName + '\n'
-      + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+      + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
       + '  mainCmd: ' + mainCmd + '\n  args: ' + insp(args));
   }; // }}}
 
@@ -305,12 +346,12 @@ SchTasks.exe /Delete /F /TN myTask
    * @memberof Wsh.OS.Task
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments for the command.
-   * @param {object} [options] - {boolean} [shell=false]
+   * @param {typeShRunOptions} [options] - Optional Parameters.
    * @returns {void}
    */
   os.Task.runTemporary = function (cmdStr, args, options) {
-    var functionName = 'os.Task.runTemporary';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.Task.runTemporary';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
 
@@ -325,12 +366,19 @@ SchTasks.exe /Delete /F /TN myTask
     var taskName = 'Task_' + path.basename(os.makeTmpPath())
       + '_' + util.createDateString();
 
-    os.Task.ensureToCreate(taskName, os.exefiles.wscript, [tmpJsPath], options);
-    os.Task.run(taskName);
-    os.Task.ensureToDelete(taskName);
+    var retVal = '';
+
+    retVal += os.Task.ensureToCreate(taskName, os.exefiles.wscript, [tmpJsPath], options);
+    retVal += '\n' + os.Task.run(taskName, options);
+    retVal += '\n' + os.Task.ensureToDelete(taskName, options);
 
     // console.log(tmpJsPath); // Debug
     fso.DeleteFile(tmpJsPath, CD.fso.force.yes);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
+
+    return;
   }; // }}}
 
   // os.Task.createAsAdmin {{{

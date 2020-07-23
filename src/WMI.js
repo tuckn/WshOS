@@ -127,8 +127,8 @@
    * @returns {sWbemObjectSet[]} - The array of enumerated SWbem-Object-Sets.
    */
   os.WMI.execQuery = function (query, options) {
-    var functionName = 'os.WMI.execQuery';
-    if (!isSolidString(query)) throwErrNonStr(functionName, query);
+    var FN = 'os.WMI.execQuery';
+    if (!isSolidString(query)) throwErrNonStr(FN, query);
 
     var compName = obtain(options, 'compName', null);
     var domainName = obtain(options, 'domainName', '.');
@@ -160,7 +160,7 @@
       return sWbemObjSets;
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  query: ' + query + '\n  options: ' + insp(options));
     }
   }; // }}}
@@ -191,7 +191,7 @@
    * @returns {object} - The converted object.
    */
   os.WMI.toJsObject = function (sWbemObjSet) {
-    // var functionName = 'os.WMI.toJsObject';
+    // var FN = 'os.WMI.toJsObject';
     var wmiObj = {};
 
     // Store Properties
@@ -259,7 +259,7 @@
    * @returns {object[]} - The array of converted objects.
    */
   os.WMI.toJsObjects = function (sWbemObjSets) {
-    // var functionName = 'os.WMI.toJsObjects';
+    // var FN = 'os.WMI.toJsObjects';
 
     var wmiObjs = sWbemObjSets.map(function (sWbemObjSet) {
       return os.WMI.toJsObject(sWbemObjSet);
@@ -322,7 +322,7 @@
    * @returns {sWbemObjectSet[]} - The array of enumerated SWbem-Object-Sets.
    */
   os.WMI.getProcesses = function (processName, options) {
-    var functionName = 'os.WMI.getProcesses';
+    var FN = 'os.WMI.getProcesses';
 
     var query = 'SELECT';
 
@@ -349,7 +349,7 @@
 
     // WHERE phrase
     if (!isPureNumber(processName) && !isString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
     var comparesFullPath = false;
 
@@ -428,9 +428,9 @@
    * @returns {sWbemObjectSet|null} - The enumerated SWbem-Object-Set.
    */
   os.WMI.getProcess = function (processName, options) {
-    var functionName = 'os.WMI.getProcess';
+    var FN = 'os.WMI.getProcess';
     if (!isPureNumber(processName) && !isString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSets = os.WMI.getProcesses(processName, options);
@@ -476,8 +476,8 @@
    * @returns {sWbemObjectSet|null} - The enumerated SWbem-Object-Set.
    */
   os.WMI.getWithSWbemPath = function (sWbemPath, options) {
-    var functionName = 'os.WMI.getWithSWbemPath';
-    if (!isSolidString(sWbemPath)) throwErrNonStr(functionName, sWbemPath);
+    var FN = 'os.WMI.getWithSWbemPath';
+    if (!isSolidString(sWbemPath)) throwErrNonStr(FN, sWbemPath);
 
     var compName = obtain(options, 'compName', null);
     var domainName = obtain(options, 'domainName', '.');
@@ -491,7 +491,7 @@
       return sWbemObjSet;
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  query: ' + sWbemPath + '\n  options: ' + insp(options));
     }
   }; // }}}
@@ -524,7 +524,7 @@
    * @returns {sWbemObjectSet[]} - The array of enumerated SWbem-Object-Sets.
    */
   os.WMI.getWindowsUserAccounts = function () {
-    // var functionName = 'os.WMI.getWindowsUserAccounts';
+    // var FN = 'os.WMI.getWindowsUserAccounts';
     var sWbemObjSets = os.WMI.execQuery('SELECT * FROM Win32_UserAccount');
     return sWbemObjSets;
   }; // }}}
@@ -562,7 +562,7 @@
       return os._thisProcessSWbemObjSet;
     }
 
-    // var functionName = 'os.WMI.getThisProcess';
+    // var FN = 'os.WMI.getThisProcess';
     var tmpJsCode = 'while(true) WScript.Sleep(1000);';
     var tmpJsPath = os.writeTempText(tmpJsCode, '.js');
 

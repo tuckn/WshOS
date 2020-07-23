@@ -11,6 +11,7 @@ var path = Wsh.Path;
 var os = Wsh.OS;
 
 var WSCRIPT = os.exefiles.wscript;
+var SCHTASKS = os.exefiles.schtasks;
 
 var _cb = function (fn/* , args */) {
   var args = Array.from(arguments).slice(1);
@@ -36,15 +37,33 @@ describe('TaskScheduler', function () {
   test('createToDel', function () {
     var taskName = 'TestScheduler_' + util.createDateString();
     var args = ['//job:autoQuit0', mockWsfGUI];
+    var retVal;
+
+    args = ['//job:autoQuit1', mockWsfGUI];
 
     // Creates
+    // dry-run
+    retVal = os.Task.create(taskName, WSCRIPT, args, { isDryRun: true });
+    expect(retVal).toContain(SCHTASKS + ' /Create /F /TN "' + taskName + '"'
+      + ' /SC ONCE /ST 23:59 /IT /RL LIMITED /TR "');
+    expect(os.Task.exists(taskName)).toBe(false);
+
     expect(os.Task.create(taskName, WSCRIPT, args)).toBe(undefined);
 
-    // Confirms the created
+    // Confirms created
+    // dry-run
+    retVal = os.Task.exists(taskName, { isDryRun: true });
+    expect(retVal).toContain(SCHTASKS + ' /Query /XML /TN ' + taskName);
+
     expect(os.Task.exists(taskName)).toBe(true);
 
     // Runs
+    // dry-run
+    retVal = os.Task.run(taskName, { isDryRun: true });
+    expect(retVal).toContain(SCHTASKS + ' /Run /I /TN ' + taskName);
+
     expect(os.Task.run(taskName)).toBe(undefined);
+
     /**
      * run後、すぐに_getProcessIDsするとプロセスを取得できないときがある
      * var pIDs = _getProcessIDs(WSCRIPT, mockWsfGUI);
@@ -52,7 +71,13 @@ describe('TaskScheduler', function () {
      */
 
     // Deletes
+    // dry-run
+    retVal = os.Task.del(taskName, { isDryRun: true });
+    expect(retVal).toContain(SCHTASKS + ' /Delete /F /TN ' + taskName);
+    expect(os.Task.exists(taskName)).toBe(true);
+
     expect(os.Task.del(taskName)).toBe(undefined);
+    expect(os.Task.exists(taskName)).toBe(false);
 
     noneStrVals.forEach(function (val) {
       expect(_cb(os.Task.create, val)).toThrowError();

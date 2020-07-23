@@ -37,8 +37,8 @@
    * @returns {boolean} - If the drive is existing, returns true.
    */
   os.isExistingDrive = function (driveLetter) {
-    var functionName = 'os.isExistingDrive';
-    if (!isString(driveLetter)) throwErrNonStr(functionName, driveLetter);
+    var FN = 'os.isExistingDrive';
+    if (!isString(driveLetter)) throwErrNonStr(FN, driveLetter);
 
     return fso.DriveExists(driveLetter);
   }; // }}}
@@ -175,9 +175,9 @@
    * @returns {string} - The assigned letter.
    */
   os.assignDriveLetter = function (dirPath, letter, userName, password) {
-    var functionName = 'os.assignDriveLetter';
-    if (!isString(dirPath)) throwErrNonStr(functionName, dirPath);
-    if (!isString(letter) && !letter) throwErrNonStr(functionName, letter);
+    var FN = 'os.assignDriveLetter';
+    if (!isString(dirPath)) throwErrNonStr(FN, dirPath);
+    if (!isString(letter) && !letter) throwErrNonStr(FN, letter);
 
     if (!isSolidString(letter)) letter = os.getTheLastFreeDriveLetter();
 
@@ -201,7 +201,7 @@
       }
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
 
     return letter;
@@ -220,8 +220,8 @@
    * @returns {void}
    */
   os.removeAssignedDriveLetter = function (letter) {
-    var functionName = 'os.removeAssignedDriveLetter';
-    if (!isString(letter)) throwErrNonStr(functionName, letter);
+    var FN = 'os.removeAssignedDriveLetter';
+    if (!isString(letter)) throwErrNonStr(FN, letter);
 
     var mainCmd = os.exefiles.net;
     var args = ['use', letter + ':', '/delete'];
@@ -243,7 +243,7 @@
        *    NET HELPMSG 2250 と入力すると、より詳しい説明が得られます。"
        */
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -268,9 +268,9 @@
    * @returns {Array} - The Array of processes ID.
    */
   os.getProcessIDs = function (processName, options) {
-    var functionName = 'os.getProcessIDs';
+    var FN = 'os.getProcessIDs';
     if (!isPureNumber(processName) && !isString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSets = os.WMI.getProcesses(processName, options);
@@ -310,9 +310,9 @@
    * @returns {object[]} - The Array of objects of the process.
    */
   os.getProcessObjs = function (processName, options) {
-    var functionName = 'os.getProcessObjs';
+    var FN = 'os.getProcessObjs';
     if (!isPureNumber(processName) && !isString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSets = os.WMI.getProcesses(processName, options);
@@ -381,9 +381,9 @@
    * @returns {object|null} - The Object of the process.
    */
   os.getProcessObj = function (processName, options) {
-    var functionName = 'os.getProcessObj';
+    var FN = 'os.getProcessObj';
     if (!isPureNumber(processName) && !isString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSet = os.WMI.getProcess(processName, options);
@@ -412,9 +412,9 @@
    * @returns {number} - The process ID to be activated.
    */
   os.activateProcess = function (processName, options) {
-    var functionName = 'os.activateProcess';
+    var FN = 'os.activateProcess';
     if (!isPureNumber(processName) && !isSolidString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSet = os.WMI.getProcess(processName, options);
@@ -438,9 +438,9 @@
    * @returns {void}
    */
   os.terminateProcesses = function (processName, options) {
-    var functionName = 'os.terminateProcesses';
+    var FN = 'os.terminateProcesses';
     if (!isPureNumber(processName) && !isSolidString(processName)) {
-      throwErrNonStr(functionName, processName);
+      throwErrNonStr(FN, processName);
     }
 
     var sWbemObjSets = os.WMI.getProcesses(processName, options);
@@ -503,8 +503,8 @@
    * @returns {void}
    */
   os.addUser = function (userName, password) {
-    var functionName = 'os.addUser';
-    if (!isString(userName)) throwErrNonStr(functionName, userName);
+    var FN = 'os.addUser';
+    if (!isString(userName)) throwErrNonStr(FN, userName);
 
     var mainCmd = os.exefiles.net;
     var args = ['user', userName, password, '/ADD', '/Y'];
@@ -543,7 +543,7 @@ WScript.Shell.Exec("net user NewUserName UsersPassword /ADD /Y")
       throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -560,8 +560,8 @@ WScript.Shell.Exec("net user NewUserName UsersPassword /ADD /Y")
    * @returns {void}
    */
   os.attachAdminAuthorityToUser = function (userName) {
-    var functionName = 'os.attachAdminAuthorityToUser';
-    if (!isString(userName)) throwErrNonStr(functionName, userName);
+    var FN = 'os.attachAdminAuthorityToUser';
+    if (!isString(userName)) throwErrNonStr(FN, userName);
 
     var mainCmd = os.exefiles.net;
     var args = ['localgroup', 'Administrators', userName, '/ADD', '/Y'];
@@ -594,7 +594,7 @@ WScript.Shell.Exec("net localgroup Administrators UserName /ADD /Y")
       throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 
@@ -611,8 +611,8 @@ WScript.Shell.Exec("net localgroup Administrators UserName /ADD /Y")
    * @returns {void}
    */
   os.deleteUser = function (userName) {
-    var functionName = 'os.deleteUser';
-    if (!isString(userName)) throwErrNonStr(functionName, userName);
+    var FN = 'os.deleteUser';
+    if (!isString(userName)) throwErrNonStr(FN, userName);
 
     var mainCmd = os.exefiles.net;
     var args = ['user', userName, '/DELETE', '/Y'];
@@ -639,7 +639,7 @@ net user UserName /delete
       throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
   }; // }}}
 })();

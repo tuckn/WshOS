@@ -328,8 +328,8 @@
    * @returns {string} - The temporary file path.
    */
   os.writeTempText = function (txtData, ext) {
-    var functionName = 'os.writeTempText';
-    if (!isString(txtData)) throwErrNonStr(functionName, txtData);
+    var FN = 'os.writeTempText';
+    if (!isString(txtData)) throwErrNonStr(FN, txtData);
     if (!isSolidString(ext)) ext = '';
 
     var tmpTxtPath = os.makeTmpPath('osWriteTempWsh_', ext);
@@ -339,7 +339,7 @@
 
     if (!fso.FileExists(tmpTxtPath)) {
       throw new Error('Error: [Create TmpFile] ' + tmpTxtPath + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')');
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
     }
 
     return tmpTxtPath;
@@ -537,8 +537,8 @@
 
   // os.writeLogEvent {{{
   function _writeLogEvent (type, text) {
-    var functionName = '_writeLogEvent';
-    if (!isString(text)) throwErrNonStr(functionName, text);
+    var FN = '_writeLogEvent';
+    if (!isString(text)) throwErrNonStr(FN, text);
 
     try {
       /**
@@ -554,7 +554,7 @@
       sh.LogEvent(type, text);
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  Failed to write the log event.\n  text: ' + text);
     }
   }

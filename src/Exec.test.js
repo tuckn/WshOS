@@ -12,6 +12,7 @@ var fso = Wsh.FileSystemObject;
 var path = Wsh.Path;
 var os = Wsh.OS;
 
+var objAdd = Object.assign;
 var isEmpty = util.isEmpty;
 var isNumber = util.isNumber;
 var isPlainObject = util.isPlainObject;
@@ -19,6 +20,7 @@ var CMD = os.exefiles.cmd;
 var CSCRIPT = os.exefiles.cscript;
 var WSCRIPT = os.exefiles.wscript;
 var NET = os.exefiles.net;
+var PING = os.exefiles.ping;
 var NOTEPAD = os.exefiles.notepad;
 
 var _cb = function (fn/* , args */) {
@@ -271,6 +273,61 @@ describe('Exec', function () {
     });
   });
 
+  test('dryRun', function () {
+    var op = { isDryRun: true };
+    var tmpPath = os.makeTmpPath();
+    var retVal;
+    var args;
+
+    retVal = os.exec('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    expect(retVal).toBe('dry-run [os.exec]: '
+      + CMD + ' /S /C"mkdir ' + tmpPath + '"'
+    );
+
+    args = ['//nologo', '//job:withErr', mockWsfCLI];
+
+    retVal = os.exec(CSCRIPT, args, op);
+    expect(retVal).toContain(
+      CMD + ' /S /C"' + CSCRIPT + ' ' + args.join(' ') + '"'
+    );
+
+    retVal = os.exec(PING, '127.0.0.1', op);
+    expect(retVal).toBe(
+      'dry-run [os.exec]: ' + CMD + ' /S /C"' + PING + ' 127.0.0.1"'
+    );
+
+    retVal = os.execSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
+
+    retVal = os.execSync(CSCRIPT, args, op);
+    expect(retVal).toContain(
+      CMD + ' /S /C"' + CSCRIPT + ' ' + args.join(' ') + '"'
+    );
+
+    retVal = os.run('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
+
+    retVal = os.runSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
+
+    args = ['//job:autoQuit1', mockWsfGUI];
+
+    retVal = os.run(WSCRIPT, ['//job:autoQuit1', mockWsfGUI], op);
+    expect(retVal).toContain(
+      CMD + ' /S /C"' + WSCRIPT + ' ' + args.join(' ') + '"'
+    );
+
+    retVal = os.runSync(WSCRIPT, args, op);
+    expect(retVal).toContain(
+      CMD + ' /S /C"' + WSCRIPT + ' ' + args.join(' ') + '"'
+    );
+
+    args = ['/D', tmpPath + '-symlink', tmpPath];
+
+    retVal = os.runAsAdmin('mklink', args, objAdd(op, { shell: true }));
+    expect(retVal).toContain(CMD + ' /S /C"mklink ' + args.join(' ') + '"');
+  });
+
   test('exec, CMD-Command, shell-true', function () {
     var tmpPath = os.makeTmpPath();
     expect(fso.FolderExists(tmpPath)).toBe(false);
@@ -296,7 +353,7 @@ describe('Exec', function () {
     });
   });
 
-  test('exec, exefile', function () {
+  test('exec, executingFile', function () {
     var oExec, stdOut, stdErr;
 
     // No Error Result
@@ -337,7 +394,7 @@ describe('Exec', function () {
   });
 
   test('exec, ping', function () {
-    var oExec = os.exec(os.exefiles.ping, '127.0.0.1');
+    var oExec = os.exec(PING, '127.0.0.1');
 
     expect(oExec.Status).toBe(0); // 0: Processing
 
@@ -374,7 +431,7 @@ describe('Exec', function () {
     });
   });
 
-  test('execSync, exe file', function () {
+  test('execSync, executingFile', function () {
     var retObj;
 
     retObj = os.execSync(CSCRIPT, ['//nologo', '//job:withErr', mockWsfCLI]);
@@ -411,7 +468,7 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
   });
 
-  test('run, exefile', function () {
+  test('run, executingFile', function () {
     var rtnVal;
 
     rtnVal = os.run(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
@@ -421,7 +478,7 @@ describe('Exec', function () {
     expect(rtnVal).toBe(CD.runs.ok); // Always 0
   });
 
-  test('run, exeFile, winStyle: hidden', function () {
+  test('run, executingFile, winStyle: hidden', function () {
     var rtnVal, pIDs;
 
     // Confirm notepad.exe non-existing
@@ -438,7 +495,7 @@ describe('Exec', function () {
     pIDs.forEach(function (pID) { _terminateProcesses(pID); });
   });
 
-  test('run, exeFile, winStyle: activeDef', function () {
+  test('run, executingFile, winStyle: activeDef', function () {
     var rtnVal, pIDs;
 
     // Confirm no notepad.exe existing
@@ -455,7 +512,7 @@ describe('Exec', function () {
     pIDs.forEach(function (pID) { _terminateProcesses(pID); });
   });
 
-  test('run, exeFile, winStyle: activeMin', function () {
+  test('run, executingFile, winStyle: activeMin', function () {
     var rtnVal, pIDs;
 
     // Confirm no notepad.exe existing
@@ -472,7 +529,7 @@ describe('Exec', function () {
     pIDs.forEach(function (pID) { _terminateProcesses(pID); });
   });
 
-  test('run, exeFile, winStyle: activeMax', function () {
+  test('run, executingFile, winStyle: activeMax', function () {
     var rtnVal, pIDs;
 
     // Confirm no notepad.exe existing
@@ -489,7 +546,7 @@ describe('Exec', function () {
     pIDs.forEach(function (pID) { _terminateProcesses(pID); });
   });
 
-  test('run, exeFile, winStyle: nonActive', function () {
+  test('run, executingFile, winStyle: nonActive', function () {
     var rtnVal, pIDs;
 
     // Confirm no notepad.exe existing
@@ -527,7 +584,7 @@ describe('Exec', function () {
     });
   });
 
-  test('runSync, exefile', function () {
+  test('runSync, executingFile', function () {
     var rtnVal;
 
     rtnVal = os.runSync(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
@@ -542,7 +599,7 @@ describe('Exec', function () {
     expect('@TODO').toBe('tested');
   });
 
-  test('runAsAdmin, <CMD Command, shell-true)', function () {
+  test('runAsAdmin, CMD Command, shell-true)', function () {
     // Create a test directory
     var tmpPath = os.makeTmpPath();
     expect(fso.FolderExists(tmpPath)).toBe(false);
@@ -588,7 +645,7 @@ describe('Exec', function () {
     });
   });
 
-  test('runAsAdmin, exe file', function () {
+  test('runAsAdmin, executingFile', function () {
     var rtnVal;
     rtnVal = os.runAsAdmin(NET, ['session']);
     expect(rtnVal).toBe(undefined);

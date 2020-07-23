@@ -7,7 +7,7 @@
   var sh = Wsh.Shell;
   var shApp = Wsh.ShellApplication;
 
-  var objAssign = Object.assign;
+  var objAdd = Object.assign;
   var insp = util.inspect;
   var isArray = util.isArray;
   var isNumber = util.isNumber;
@@ -193,8 +193,8 @@
    * @returns {string} - The converted command.
    */
   os.convToCmdCommand = function (cmdStr, args, options) {
-    var functionName = 'os.convToCmdCommand';
-    if (!isSolidString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.convToCmdCommand';
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = _srrPath(cmdStr);
 
@@ -206,7 +206,7 @@
     } else {
       argsStr = '';
       // throw new Error('Error [ERR_INVALID_ARG_TYPE]\n'
-      //   + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+      //   + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
       //   + '  args: ' + insp(args));
     }
 
@@ -230,6 +230,11 @@
 
     return command;
   }; // }}}
+
+  /**
+   * @typedef {typeConvToCommandOptions} typeOsExecOptions
+   * @property {boolean} [isDryRun=false] - No execute, returns the string of command.
+   */
 
   // os.exec {{{
   /**
@@ -256,11 +261,12 @@
    * os.exec('mkdir', 'D:\\Temp');
    *
    * // With the `shell` option
-   * var oExec1 = os.exec('mkdir', 'D:\\Temp', { shell: true });
+   * var oExec1 = os.exec('mkdir', 'D:\\Temp1', { shell: true });
    * console.log(oExec1.ExitCode); // 0 (always)
    *
    * while (oExec1.Status == 0) WScript.Sleep(300); // Waiting the finished
    * console.log(oExec1.Status); // 1 (It means finished)
+   * fso.FolderExists('D:\\Temp1'); // Returns: true
    *
    * // Ex.2 Exe-file
    * var oExec2 = os.exec('ping.exe', ['127.0.0.1']);
@@ -271,18 +277,30 @@
    *
    * var result = oExec2.StdOut.ReadAll();
    * console.log(result); // Outputs the result of ping 127.0.0.1
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.exec('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [os.exec]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
+   * fso.FolderExists('D:\\Temp3'); // Returns: false
    * @function exec
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {typeConvToCommandOptions} [options] - Optional parameters.
-   * @returns {typeExecObject} - See {@link Wsh.OS.typeExecObject}
+   * @param {typeOsExecOptions} [options] - Optional parameters.
+   * @returns {typeExecObject|string} - If isDryRun is true, returns string.
    */
   os.exec = function (cmdStr, args, options) {
-    var functionName = 'os.exec';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.exec';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
+    if (!isSolidString(command)) throwErrNonStr(FN, command);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
+
     try {
       /**
        * @function Exec
@@ -293,7 +311,7 @@
       return sh.Exec(command);
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  command: ' + command);
     }
   }; // }}}
@@ -334,19 +352,28 @@
    * //   stdout: <The result of ping 127.0.0.1>,
    * //   stderr: "",
    * //   error: false };
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.execSync('ping.exe', '127.0.0.1', { isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [os.execSync]: C:\Windows\System32\cmd.exe /S /C"C:\Windows\System32\PING.EXE 127.0.0.1"
    * @function execSync
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {object} [options] - See {@link Wsh.OS.convToCmdCommand}
-   * @returns {typeExecSyncReturn} - See {@link typeExecSyncReturn}
+   * @param {typeOsExecOptions} [options] - Optional parameters.
+   * @returns {typeExecSyncReturn|string} - If isDryRun is true, returns string.
    */
   os.execSync = function (cmdStr, args, options) {
-    var functionName = 'os.execSync';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.execSync';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
-    if (!isSolidString(command)) throwErrNonStr(functionName, command);
+    if (!isSolidString(command)) throwErrNonStr(FN, command);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
 
     var oExec;
     var stdout = '';
@@ -372,7 +399,7 @@
       }
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  command: ' + command);
     }
 
@@ -386,7 +413,7 @@
 
   // _shRun {{{
   /**
-   * @typedef {object} typeShRunOptions
+   * @typedef {typeOsExecOptions} typeShRunOptions
    * @property {(number|string)} [winStyle="activeDef"] - See {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.windowStyles.html|Wsh.Constants.windowStyles}.
    * @property {boolean} [waits=true] - See {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.waits.html|Wsh.Constants.waits}.
    */
@@ -397,11 +424,14 @@
    * @memberof Wsh.OS
    * @param {string} command - The command and arguments.
    * @param {typeShRunOptions} [options] - Optional parameters.
-   * @returns {number} - Always return 0.
+   * @returns {number|string} - Return a number except when isDryRun=true.
    */
   function _shRun (command, options) {
-    var functionName = '_shRun';
-    if (!isSolidString(command)) throwErrNonStr(functionName, command);
+    var FN = '_shRun';
+    if (!isSolidString(command)) throwErrNonStr(FN, command);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
 
     var winStyle = obtain(options, 'winStyle', 'activeDef');
     var winStyleCode = isPureNumber(winStyle)
@@ -420,7 +450,7 @@
       return sh.Run(command, winStyleCode, waits);
     } catch (e) {
       throw new Error(insp(e) + '\n'
-        + '  at ' + functionName + ' (' + MODULE_TITLE + ')\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
         + '  command: ' + command);
     }
   } // }}}
@@ -435,33 +465,41 @@
    *
    * // Ex1. CMD-command
    * // Throws a Error. `mkdir` is the CMD command
-   * os.run('mkdir', 'D:\\Temp');
+   * os.run('mkdir', 'D:\\Temp1');
    *
    * // With the options
-   * os.run('mkdir', 'D:\\Temp', { shell: true, winStyle: 'hidden' });
+   * os.run('mkdir', 'D:\\Temp1', { shell: true, winStyle: 'hidden' });
    * // Returns: Always 0
    *
-   * while (!fso.FolderExists('D:\\Temp')) { // Waiting the created
+   * while (!fso.FolderExists('D:\\Temp1')) { // Waiting the created
    *   WScript.Sleep(300);
    * }
-   * console.dir(fso.FolderExists('D:\\Temp')); // true
+   * fso.FolderExists('D:\\Temp1'); // Returns: true
    *
    * // Ex2. Exe-file
-   * os.run('notepad.exe', ['D:\\Test.txt'], { winStyle: 'activeMax' });
+   * os.run('notepad.exe', ['D:\\Test2.txt'], { winStyle: 'activeMax' });
    * // Returns: Always 0
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.run('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [_shRun]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
+   * fso.FolderExists('D:\\Temp3'); // Returns: false
    * @function run
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {object} [options] See {@link typeShRunOptions} and {@link typeConvToCommandOptions}
-   * @returns {number} - Always return 0.
+   * @param {typeShRunOptions} [options] - Optional parameters.
+   * @returns {number|string} - Returns 0 except when isDryRun=true.
    */
   os.run = function (cmdStr, args, options) {
-    var functionName = 'os.run';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.run';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
-    return _shRun(command, objAssign({}, options, { waits: false }));
+
+    return _shRun(command, objAdd({}, options, { waits: false }));
   }; // }}}
 
   // os.runSync {{{
@@ -474,37 +512,44 @@
    *
    * // Ex1. CMD-command
    * // Throws a Error. `mkdir` is the CMD command
-   * os.runSync('mkdir', 'D:\\Temp');
+   * os.runSync('mkdir', 'D:\\Temp1');
    *
    * // With the options
-   * var retVal1 = os.runSync('mkdir', 'D:\\Temp', {
+   * var retVal1 = os.runSync('mkdir', 'D:\\Temp1', {
    *   shell: true, winStyle: 'hidden'
    * });
    *
    * console.log(retVal1); // Outputs the number of the result code
-   * console.dir(fso.FolderExists('D:\\Temp')); // true
+   * fso.FolderExists('D:\\Temp1'); // Returns: true
    *
    * // Ex2. Exe-file
-   * var retVal2 = os.runSync('notepad.exe', ['D:\\Test.txt'], {
+   * var retVal2 = os.runSync('notepad.exe', ['D:\\Test2.txt'], {
    *   winStyle: 'activeMax'
    * });
    *
    * // Waits until the notepad process is finished
    *
    * console.log(retVal2); // Outputs the number of the result code
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.runSync('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [_shRun]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
+   * fso.FolderExists('D:\\Temp3'); // Returns: false
    * @function runSync
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {object} [options] See {@link typeShRunOptions} and {@link typeConvToCommandOptions}
-   * @returns {number} - The return code from the app.
+   * @param {typeShRunOptions} [options] - Optional parameters.
+   * @returns {number|string} - Returns code from the app except when isDryRun=true.
    */
   os.runSync = function (cmdStr, args, options) {
-    var functionName = 'os.runSync';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.runSync';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
-    return _shRun(command, objAssign({}, options, { waits: true }));
+    return _shRun(command, objAdd({}, options, { waits: true }));
   }; // }}}
 
   var _isAdmin = undefined;
@@ -557,14 +602,14 @@
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {object} [options] See {@link typeShRunOptions} and {@link typeConvToCommandOptions}
-   * @returns {void}
+   * @param {typeShRunOptions} [options] - Optional parameters.
+   * @returns {void|string} - Returns undefined except when isDryRun=true.
    */
   os.runAsAdmin = function (cmdStr, args, options) {
     if (os.isAdmin()) return os.run(cmdStr, args, options);
 
-    var functionName = 'os.runAsAdmin';
-    if (!isString(cmdStr)) throwErrNonStr(functionName, cmdStr);
+    var FN = 'os.runAsAdmin';
+    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var exePath = cmdStr;
 
@@ -582,6 +627,9 @@
       exePath = os.exefiles.cmd;
       argsStr = '/S /C"' + _srrPath(cmdStr) + ' ' + argsStr + '"';
     }
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + exePath + ' ' + argsStr;
 
     var winStyle = obtain(options, 'winStyle', 'activeDef');
     var winStyleCode = isPureNumber(winStyle) ? winStyle : CD.windowStyles[winStyle];

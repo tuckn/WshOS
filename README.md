@@ -37,7 +37,7 @@ or
 > git submodule add https://github.com/tuckn/WshOS.git ./WshModules/WshOS
 ```
 
-(3) Include _.\WshOS\dist\bundle.js_ into your .wsf file.
+(3) Include _.\\WshOS\\dist\\bundle.js_ into your .wsf file.
 For Example, if your file structure is
 
 ```console
@@ -62,11 +62,11 @@ The content of above _Run.wsf_ is
 ```
 
 I recommend this .wsf file encoding to be UTF-8 [BOM, CRLF].
-This allows the following functions to be used in _.\MyScript.js_.
+This allows the following functions to be used in _.\\MyScript.js_.
 
 ## Usage
 
-Now _.\MyScript.js_ (JScript) can use the useful functions to handle paths.
+Now _.\\MyScript.js_ (JScript) can use the useful functions to handle paths.
 for example,
 
 ```js
@@ -124,7 +124,13 @@ os.deleteUser('MyUserName');
 Many other functions are added.
 See the [documentation](https://docs.tuckn.net/WshOS) for more details.
 
-And you can also use all functions of [tuckn/WshPolyfill](https://github.com/tuckn/WshPolyfill), [tuckn/WshUtil](https://github.com/tuckn/WshUtil) and [tuckn/WshPath](https://github.com/tuckn/WshPath).
+### Dependency Modules
+
+You can also use the following useful functions in _.\\MyScript.js_ (JScript).
+
+- [tuckn/WshPolyfill](https://github.com/tuckn/WshPolyfill)
+- [tuckn/WshUtil](https://github.com/tuckn/WshUtil)
+- [tuckn/WshPath](https://github.com/tuckn/WshPath)
 
 ## Documentation
 
