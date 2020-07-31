@@ -14,6 +14,7 @@
   var obtain = util.obtainPropVal;
 
   var os = Wsh.OS;
+  var WSCRIPT = os.exefiles.wscript;
 
   /** @constant {string} */
   var MODULE_TITLE = 'WshOS/TaskScheduler.js';
@@ -366,18 +367,23 @@ SchTasks.exe /Delete /F /TN myTask
     var taskName = 'Task_' + path.basename(os.makeTmpPath())
       + '_' + util.createDateString();
 
-    var retVal = '';
+    var isDryRun = obtain(options, 'isDryRun', false);
+    var retLog = '';
+    var retVal;
 
-    retVal += os.Task.ensureToCreate(taskName, os.exefiles.wscript, [tmpJsPath], options);
-    retVal += '\n' + os.Task.run(taskName, options);
-    retVal += '\n' + os.Task.ensureToDelete(taskName, options);
+    retVal = os.Task.ensureToCreate(taskName, WSCRIPT, [tmpJsPath], options);
+    if (isDryRun) retLog = 'dry-run [' + FN + ']: ' + retVal;
+
+    retVal = os.Task.run(taskName, options);
+    if (isDryRun) retLog += '\n' + retVal;
+
+    retVal = '\n' + os.Task.ensureToDelete(taskName, options);
+    if (isDryRun) retLog += '\n' + retVal;
 
     // console.log(tmpJsPath); // Debug
     fso.DeleteFile(tmpJsPath, CD.fso.force.yes);
 
-    var isDryRun = obtain(options, 'isDryRun', false);
-    if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
-
+    if (isDryRun) return retLog;
     return;
   }; // }}}
 

@@ -289,7 +289,7 @@
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
    * @param {typeOsExecOptions} [options] - Optional parameters.
-   * @returns {typeExecObject|string} - If isDryRun is true, returns string.
+   * @returns {typeExecObject|string} - If options.isDryRun is true, returns string.
    */
   os.exec = function (cmdStr, args, options) {
     var FN = 'os.exec';
@@ -363,7 +363,7 @@
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
    * @param {typeOsExecOptions} [options] - Optional parameters.
-   * @returns {typeExecSyncReturn|string} - If isDryRun is true, returns string.
+   * @returns {typeExecSyncReturn|string} - If options.isDryRun is true, returns string.
    */
   os.execSync = function (cmdStr, args, options) {
     var FN = 'os.execSync';
@@ -424,7 +424,7 @@
    * @memberof Wsh.OS
    * @param {string} command - The command and arguments.
    * @param {typeShRunOptions} [options] - Optional parameters.
-   * @returns {number|string} - Return a number except when isDryRun=true.
+   * @returns {number|string} - Return a number except when options.isDryRun is true.
    */
   function _shRun (command, options) {
     var FN = '_shRun';
@@ -491,7 +491,7 @@
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
    * @param {typeShRunOptions} [options] - Optional parameters.
-   * @returns {number|string} - Returns 0 except when isDryRun=true.
+   * @returns {number|string} - Returns 0 except when options.isDryRun is true.
    */
   os.run = function (cmdStr, args, options) {
     var FN = 'os.run';
@@ -542,7 +542,7 @@
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
    * @param {typeShRunOptions} [options] - Optional parameters.
-   * @returns {number|string} - Returns code from the app except when isDryRun=true.
+   * @returns {number|string} - Returns code from the app except when options.isDryRun is true.
    */
   os.runSync = function (cmdStr, args, options) {
     var FN = 'os.runSync';
@@ -603,7 +603,7 @@
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
    * @param {typeShRunOptions} [options] - Optional parameters.
-   * @returns {void|string} - Returns undefined except when isDryRun=true.
+   * @returns {void|string} - Returns undefined except when options.isDryRu is =true.
    */
   os.runAsAdmin = function (cmdStr, args, options) {
     if (os.isAdmin()) return os.run(cmdStr, args, options);
