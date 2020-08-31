@@ -84,9 +84,9 @@ describe('Exec', function () {
     expect(escapeForCmd('abcd1234')).toBe('abcd1234');
     expect(escapeForCmd('abcd 1234')).toBe('"abcd 1234"');
     expect(escapeForCmd('あいうえお')).toBe('"あいうえお"');
-    expect(escapeForCmd('tag=R&B')).toBe('"tag=R^&B"');
+    expect(escapeForCmd('tag=R&B')).toBe('tag=R^&B');
     expect(escapeForCmd('/RegExp="^(A|The) $"')).toBe('"/RegExp=\\"^^(A^|The) $\\""');
-    expect(escapeForCmd('<%^[yyyy|yy]-MM-DD%>')).toBe('"^<%^^[yyyy^|yy]-MM-DD%^>"');
+    expect(escapeForCmd('<%^[yyyy|yy]-MM-DD%>')).toBe('^<%^^[yyyy^|yy]-MM-DD%^>');
 
     var hasSpacePath = 'C:\\Program Files';
     expect(escapeForCmd(hasSpacePath)).toBe('"' + hasSpacePath + '"');
@@ -97,7 +97,7 @@ describe('Exec', function () {
     var wQuotationPath = '"C:\\Program Files (x86)\\Windows NT"';
     expect(escapeForCmd(wQuotationPath)).toBe('"\\"C:\\Program Files (x86)\\Windows NT\\""');
 
-    expect(escapeForCmd('>')).toBe('"^>"'); // Oops! Use joinCmdArgs
+    expect(escapeForCmd('>')).toBe('^>'); // Oops! Use joinCmdArgs
 
     expect(escapeForCmd(300)).toBe('300');
 
@@ -133,9 +133,9 @@ describe('Exec', function () {
       + '1>&2 '
       + 'C:\\Users\\Tuckn\\err.log '
       + '| '
-      + '"tag=R^&B" '
+      + 'tag=R^&B '
       + '"/RegExp=\\"^^(A^|The) $\\"" '
-      + '"^<%^^[yyyy^|yy]-MM-DD%^>"'
+      + '^<%^^[yyyy^|yy]-MM-DD%^>'
     );
 
     var args2 = [
@@ -241,9 +241,9 @@ describe('Exec', function () {
       + ' 1>&2'
       + ' "C:\\My Logs\\Tuckn\\err.log"' // Surrounded
       + ' |'
-      + ' "tag=R^&B"' // Escaped
+      + ' tag=R^&B' // Escaped
       + ' "/RegExp=\\"^^(A^|The) $\\""'
-      + ' "^<%^^[yyyy^|yy]-MM-DD%^>"'
+      + ' ^<%^^[yyyy^|yy]-MM-DD%^>'
     );
 
     command = convToCmdCommand(NET, args, { shell: true });
@@ -251,9 +251,9 @@ describe('Exec', function () {
       + ' 1>&2'
       + ' "C:\\My Logs\\Tuckn\\err.log"' // Surrounded
       + ' |'
-      + ' "tag=R^&B"' // Escaped
+      + ' tag=R^&B' // Escaped
       + ' "/RegExp=\\"^^(A^|The) $\\""'
-      + ' "^<%^^[yyyy^|yy]-MM-DD%^>"'
+      + ' ^<%^^[yyyy^|yy]-MM-DD%^>'
       + '"'
     );
 

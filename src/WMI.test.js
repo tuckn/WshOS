@@ -208,6 +208,7 @@ describe('WMI', function () {
       expect(_cb(os.WMI.getWithSWbemPath, val)).toThrowError();
     });
 
+    expect('@TODO').toBe('tested');
     sWbemPath = 'Win32_Process.Caption="chrome.exe"';
     // @TODO Fix
     sWbemObjSet = os.WMI.getWithSWbemPath(sWbemPath);

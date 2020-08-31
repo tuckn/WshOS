@@ -15,6 +15,7 @@
   var isString = util.isString;
   var isSolidArray = util.isSolidArray;
   var isSolidString = util.isSolidString;
+  var includes = util.includes;
   var obtain = util.obtainPropVal;
 
   var os = Wsh.OS;
@@ -70,7 +71,7 @@
    * os.escapeForCmd('abcd1234'); // Returns: 'abcd1234'
    * os.escapeForCmd('abcd 1234'); // Returns: '"abcd 1234"
    * os.escapeForCmd('あいうえお'); // Returns: '"あいうえお"'
-   * os.escapeForCmd('tag=R&B'); // Returns: '"tag=R^&B"'
+   * os.escapeForCmd('tag=R&B'); // Returns: 'tag=R^&B'
    *
    * os.escapeForCmd('C:\\Program Files');
    * // Returns: '"C:\\Program Files"');
@@ -82,13 +83,13 @@
    * // Returns: '"\\"C:\\Program Files (x86)\\Windows NT\\""'
    *
    * os.escapeForCmd('>');
-   * // Returns: '"^>"'
+   * // Returns: '^>'
    *
    * os.escapeForCmd('/RegExp="^(A|The) $"');
    * // Returns: '"/RegExp=\\"^^(A^|The) $\\""'
    *
    * os.escapeForCmd('<%^[yyyy|yy]-MM-DD%>');
-   * // Returns: '"^<%^^[yyyy^|yy]-MM-DD%^>"'
+   * // Returns: '^<%^^[yyyy^|yy]-MM-DD%^>'
    * @function escapeForCmd
    * @memberof Wsh.OS
    * @param {string} str - The string to convert.
@@ -99,13 +100,14 @@
       throwErrNonStr('os.escapeForCmd', str);
     }
 
-    if (str === '') return '""';
     if (isNumber(str)) return String(str);
-    if (util.isASCII(str) && !/[\s"&<>^|]/.test(str)) return str;
+    if (str === '') return str;
 
-    var escArg = '"'
-      + str.replace(/(["])/g, '\\$1').replace(/([&<>^|])/g, '^$1')
-      + '"';
+    var escArg = str.replace(/(["])/g, '\\$1').replace(/([&<>^|])/g, '^$1');
+
+    if (!util.isASCII(escArg) || includes(escArg, ' ')) {
+      escArg = '"' + escArg + '"';
+    }
 
     return escArg;
   };
@@ -126,7 +128,7 @@
    *   '/RegExp="^(A|The) $"',
    *   '<%^[yyyy|yy]-MM-DD%>'
    * ]);
-   * // Returns: '"C:\\Program Files (x86)\\Hoge\\foo.exe" 1>&2 C:\\Logs\\err.log | "tag=R^&B" "/RegExp=\\"^^(A^|The) $\\"" "^<%^^[yyyy^|yy]-MM-DD%^>"'
+   * // Returns: '"C:\\Program Files (x86)\\Hoge\\foo.exe" 1>&2 C:\\Logs\\err.log | tag=R^&B "/RegExp=\\"^^(A^|The) $\\"" ^<%^^[yyyy^|yy]-MM-DD%^>'
    * @function joinCmdArgs
    * @memberof Wsh.OS
    * @param {Array} args - The arguments to convert.
