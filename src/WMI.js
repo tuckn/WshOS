@@ -558,6 +558,8 @@
    * @returns {sWbemObjectSet} - The enumerated SWbem-Object-Set.
    */
   os.WMI.getThisProcess = function () {
+    var FN = 'os.WMI.getThisProcess';
+
     if (os._thisProcessSWbemObjSet !== undefined) {
       return os._thisProcessSWbemObjSet;
     }
@@ -572,7 +574,13 @@
       matchWords: [tmpJsPath] // tmpJsPath is the unique
     });
 
-    os._thisProcessID = Number(sWbemObjSet.ParentProcessId);
+    // @FIXME sometime, ParentProcessId is null?
+		try {
+			os._thisProcessID = Number(sWbemObjSet.ParentProcessId);
+		} catch (e) {
+      throw new Error(insp(e) + '\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')');
+		}
 
     sWbemObjSet.Terminate();
     fso.DeleteFile(tmpJsPath, CD.fso.force.yes);

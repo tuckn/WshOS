@@ -96,9 +96,7 @@
    * @returns {string} - The string escaped for Command-Prompt.
    */
   os.escapeForCmd = function (str) {
-    if (!isNumber(str) && !isString(str)) {
-      throwErrNonStr('os.escapeForCmd', str);
-    }
+    if (!isNumber(str) && !isString(str)) throwErrNonStr('os.escapeForCmd', str);
 
     if (isNumber(str)) return String(str);
     if (str === '') return str;
@@ -295,7 +293,7 @@
    */
   os.exec = function (cmdStr, args, options) {
     var FN = 'os.exec';
-    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
     if (!isSolidString(command)) throwErrNonStr(FN, command);
@@ -369,7 +367,7 @@
    */
   os.execSync = function (cmdStr, args, options) {
     var FN = 'os.execSync';
-    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
     if (!isSolidString(command)) throwErrNonStr(FN, command);
@@ -497,7 +495,7 @@
    */
   os.run = function (cmdStr, args, options) {
     var FN = 'os.run';
-    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
 
@@ -548,7 +546,7 @@
    */
   os.runSync = function (cmdStr, args, options) {
     var FN = 'os.runSync';
-    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = os.convToCmdCommand(cmdStr, args, options);
     return _shRun(command, objAdd({}, options, { waits: true }));
@@ -611,7 +609,7 @@
     if (os.isAdmin()) return os.run(cmdStr, args, options);
 
     var FN = 'os.runAsAdmin';
-    if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var exePath = cmdStr;
 

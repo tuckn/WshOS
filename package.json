@@ -2,7 +2,7 @@
   "name": "@tuckn/WshOS",
   "description": "Adds some useful functions that handles Windows OS into WSH (Windows Script Host).",
   "version": "3.0.0",
-  "author": "Tuckn <tuckn333+github@gmail.com>",
+  "author": "Tuckn <tuckn333@gmail.com>",
   "private": false,
   "license": "MIT",
   "homepage": "https://docs.tuckn.net/WshOS",
