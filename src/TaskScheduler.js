@@ -54,7 +54,7 @@
     if (!isString(taskName)) throwErrNonStr(FN, taskName);
 
     var mainCmd = os.exefiles.schtasks;
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
 
     /**
      * タスク登録時、↓ /ST 00:00 などにすると、StdErrに"警告: /ST が現時刻よりも早いため、タスクは実行されない可能性があります。"と出力されダルいので23:59にする
@@ -458,7 +458,7 @@ SchTasks.exe /Delete /F /TN myTask
     var FN = 'os.Task.runTemporary';
     if (!isString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
 
     // Write a temporary JScript
     // @note SchTask.exeには261文字しか渡せないので、WSHでラップする

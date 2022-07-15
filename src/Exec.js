@@ -27,69 +27,99 @@
     util.throwTypeError('string', MODULE_TITLE, functionName, typeErrVal);
   };
 
-  // os.surroundPath {{{
+  // os.surroundCmdArg {{{
   /**
-   * Surrounds the file path with double quotes.
+   * Surrounds a file path and argument with double quotes.
    *
    * @example
    * var os = Wsh.OS; // Shorthand
    *
-   * os.surroundPath('C:\\Windows\\System32\\notepad.exe'); // No space
+   * os.surroundCmdArg('C:\\Windows\\System32\\notepad.exe'); // No space
    * // Returns: 'C:\\Windows\\System32\\notepad.exe'
    *
-   * os.surroundPath('C:\\Program Files'); // Has a space
+   * os.surroundCmdArg('C:\\Program Files'); // Has a space
    * // Returns: '"C:\\Program Files"'
    *
-   * os.surroundPath('"C:\\Program Files (x86)\\Windows NT"'); // Already quoted
+   * os.surroundCmdArg('"C:\\Program Files (x86)\\Windows NT"'); // Already quoted
    * // Returns: '"C:\\Program Files (x86)\\Windows NT"'
    *
-   * os.surroundPath('D:\\2011-01-01家族で初詣'); // Non-ASCII chars
+   * os.surroundCmdArg('D:\\2011-01-01家族で初詣'); // Non-ASCII chars
    * // Returns: '"D:\\2011-01-01家族で初詣"'
-   * @function surroundPath
+   *
+   * os.surroundCmdArg('D:\\Music\\R&B'); // Ampersand
+   * // Returns: '"D:\\Music\\R&B"'
+   *
+   * os.surroundCmdArg('abcd1234'); // Returns: 'abcd1234'
+   * os.surroundCmdArg('abcd 1234'); // Returns: '"abcd 1234"
+   * os.surroundCmdArg('あいうえお'); // Returns: '"あいうえお"'
+   *
+   * // A command control character
+   * os.surroundCmdArg('|'); // Returns: '|'
+   * os.surroundCmdArg('>'); // Returns: '>'
+   *
+   * // Inner quoted
+   * os.surroundCmdArg('-p"My p@ss wo^d"'); // Returns: '-p"My p@ss wo^d"'
+   * os.surroundCmdArg('1> "C:\\logs.txt"'); // Returns: '"1> "C:\\logs.txt""'
+   * os.surroundCmdArg('1>"C:\\logs.txt"'); // Returns: '1>"C:\\logs.txt"'
+   * @function surroundCmdArg
    * @memberof Wsh.OS
    * @param {string} str - The path to surround.
    * @returns {string} - The surrounded path.
    */
-  os.surroundPath = function (str) {
-    if (!isString(str)) throwErrNonStr('os.surroundPath', str);
+  os.surroundCmdArg = function (str) {
+    if (!isString(str)) throwErrNonStr('os.surroundCmdArg', str);
 
     if (str === '') return '';
-    if (util.isASCII(str) && !/[\s"&<>^|]/.test(str)) return str;
+
+    // Already quoted
     if (/^".*"$/.test(str)) return str;
+
+    // Inner quoted
+    // Ex1. Stdout: 1>"C:\\logs.txt"
+    // Ex2. 7-Zip password option: -p"My p@ss wo^d"
+    if (/^[A-Za-z0-9_>/=-]+(".+")?[A-Za-z0-9_&/=-]*$/.test(str)) return str;
+
+    if (util.isASCII(str)) {
+      if (!includes(str, ' ')) return str;
+
+      // @Note CMD treats the ,=; as an argument delimiter
+      // if (!/["&<>^|,=;]/.test(str)) return str;
+    }
+
     return '"' + str + '"';
   };
-  var _srrPath = os.surroundPath;
+  var _srrPath = os.surroundCmdArg;
   // }}}
 
   // os.escapeForCmd {{{
   /**
-   * Escapes the string of argument in CMD.exe. Note the difference from {@link Wsh.OS.joinCmdArgs}. {@link http://thinca.hatenablog.com/entry/20100210/1265813598|Ref1} {@link http://output.jsbin.com/anitaz/11|Ref2}
+   * Escapes the string of argument in CMD.exe. Note {@link http://thinca.hatenablog.com/entry/20100210/1265813598|Ref1} {@link http://output.jsbin.com/anitaz/11|Ref2}
    *
    * @example
    * var os = Wsh.OS; // Shorthand
    *
-   * os.escapeForCmd('abcd1234'); // Returns: 'abcd1234'
-   * os.escapeForCmd('abcd 1234'); // Returns: '"abcd 1234"
-   * os.escapeForCmd('あいうえお'); // Returns: '"あいうえお"'
    * os.escapeForCmd('tag=R&B'); // Returns: 'tag=R^&B'
    *
-   * os.escapeForCmd('C:\\Program Files');
-   * // Returns: '"C:\\Program Files"');
-   *
-   * os.escapeForCmd('C:\\Windows\\System32\\notepad.exe');
-   * // Returns: 'C:\\Windows\\System32\\notepad.exe'
-   *
-   * os.escapeForCmd("C:\\Program Files (x86)\\Windows NT");
-   * // Returns: '"\\"C:\\Program Files (x86)\\Windows NT\\""'
-   *
    * os.escapeForCmd('>');
-   * // Returns: '^>'
+   * // Returns: '>' // Not escaped. It's a redirect character.
    *
    * os.escapeForCmd('/RegExp="^(A|The) $"');
    * // Returns: '"/RegExp=\\"^^(A^|The) $\\""'
    *
    * os.escapeForCmd('<%^[yyyy|yy]-MM-DD%>');
    * // Returns: '^<%^^[yyyy^|yy]-MM-DD%^>'
+   *
+   * os.escapeForCmd(300);
+   * // Returns: '300'
+   *
+   * os.escapeForCmd('C:\\Program Files');
+   * // Returns: 'C:\\Program Files');
+   *
+   * os.escapeForCmd('C:\\Windows\\System32\\notepad.exe');
+   * // Returns: 'C:\\Windows\\System32\\notepad.exe'
+   *
+   * os.escapeForCmd('"C:\\Program Files (x86)\\Windows NT"');
+   * // Returns: '\\"C:\\Program Files (x86)\\Windows NT\\"'
    * @function escapeForCmd
    * @memberof Wsh.OS
    * @param {string} str - The string to convert.
@@ -101,13 +131,13 @@
     if (isNumber(str)) return String(str);
     if (str === '') return str;
 
-    var escArg = str.replace(/(["])/g, '\\$1').replace(/([&<>^|])/g, '^$1');
+    // Stdout
+    if (/^(1|2)?>{1,2}(&(1|2))?$/.test(str)) return str;
 
-    if (!util.isASCII(escArg) || includes(escArg, ' ')) {
-      escArg = '"' + escArg + '"';
-    }
+    // Pipe
+    if (str === '<' || str === '|') return str;
 
-    return escArg;
+    return str.replace(/(["])/g, '\\$1').replace(/([&<>^|])/g, '^$1');
   };
   var _escapeForCmd = os.escapeForCmd;
   // }}}
@@ -127,11 +157,16 @@
    *   '<%^[yyyy|yy]-MM-DD%>'
    * ]);
    * // Returns: '"C:\\Program Files (x86)\\Hoge\\foo.exe" 1>&2 C:\\Logs\\err.log | tag=R^&B "/RegExp=\\"^^(A^|The) $\\"" ^<%^^[yyyy^|yy]-MM-DD%^>'
+   *
+   * // @NOTE If you include standard output, divide the array elements
+   * Wsh.OS.joinCmdArgs(['ping.exe', 'localhost', '>', 'C:\\My Logs\\stdout.log]);
+   * // Or, do not put space in between the dest and quoted it
+   * Wsh.OS.joinCmdArgs(['ping.exe', 'localhost', '1>"C:\\My Logs\\stdout.log"]);
    * @function joinCmdArgs
    * @memberof Wsh.OS
-   * @param {Array} args - The arguments to convert.
+   * @param {string[]|string} args - The arguments to convert. If args is String, return this string value.
    * @param {object} [options] - Optional parameters.
-   * @param {boolean} [options.escapes=true] - Escapes arguments.
+   * @param {boolean} [options.escapes=true] - Escapes arguments for CMD.
    * @returns {string} - The string of escaped and joined.
    */
   os.joinCmdArgs = function (args, options) {
@@ -141,10 +176,9 @@
     var escapes = obtain(options, 'escapes', true);
 
     var argsStr = args.reduce(function (acc, arg) {
-      if (!escapes) return acc + ' ' + arg;
-      if (/^(1|2)?>{1,2}(&(1|2))?$/.test(arg)) return acc + ' ' + arg;
-      if (arg === '<' || arg === '|') return acc + ' ' + arg;
-      return acc + ' ' + _escapeForCmd(arg);
+      var str = escapes ? _escapeForCmd(arg) : arg;
+
+      return acc + ' ' + os.surroundCmdArg(str);
     }, '');
 
     return argsStr.trim();
@@ -152,7 +186,7 @@
   var _joinCmdArgs = os.joinCmdArgs;
   // }}}
 
-  // os.convToCmdCommand {{{
+  // os.convToCmdlineStr {{{
   /**
    * @typedef {object} typeConvToCommandOptions
    * @property {boolean} [shell=false] - Wraps with CMD.EXE
@@ -161,39 +195,39 @@
    */
 
   /**
-   * Converts the command and arguments for Command-Prompt.
+   * Converts the command and arguments to a command line string.
    *
    * @example
    * var os = Wsh.OS;
    *
-   * os.convToCmdCommand('net', ['use', '/delete']);
+   * os.convToCmdlineStr('net', ['use', '/delete']);
    * // Returns: 'net user /delete'
    *
-   * os.convToCmdCommand('net', ['use', '/delete'], { shell: true });
+   * os.convToCmdlineStr('net', ['use', '/delete'], { shell: true });
    * // Returns: 'C:\Windows\System32\cmd.exe /S /C"net user /delete"'
    *
-   * os.convToCmdCommand('net', 'use /delete', { shell: true, closes: false });
+   * os.convToCmdlineStr('net', 'use /delete', { shell: true, closes: false });
    * // Returns: 'C:\Windows\System32\cmd.exe /S /K"net user /delete"'
    *
    * // The 2nd argument: Array vs String
    * // Array is escaped
-   * os.convToCmdCommand('D:\\My Apps\\app.exe',
+   * os.convToCmdlineStr('D:\\My Apps\\app.exe',
    *   ['/RegExp="^(A|The) $"', '-f', 'C:\\My Data\\img.doc']);
    * // Returns: '"D:\\My Apps\\app.exe" "/RegExp=\\"^^(A^|The) $\\"" -f "C:\\My Data\\img.doc"'
    *
    * // String is not escaped
-   * os.convToCmdCommand('D:\\My Apps\\app.exe',
+   * os.convToCmdlineStr('D:\\My Apps\\app.exe',
    *   '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc');
    * // Returns: '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc'
-   * @function convToCmdCommand
+   * @function convToCmdlineStr
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments to format.
    * @param {typeConvToCommandOptions} [options] - Optional parameters.
    * @returns {string} - The converted command.
    */
-  os.convToCmdCommand = function (cmdStr, args, options) {
-    var FN = 'os.convToCmdCommand';
+  os.convToCmdlineStr = function (cmdStr, args, options) {
+    var FN = 'os.convToCmdlineStr';
     if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
     var command = _srrPath(cmdStr);
@@ -234,6 +268,7 @@
   /**
    * @typedef {typeConvToCommandOptions} typeOsExecOptions
    * @property {boolean} [isDryRun=false] - No execute, returns the string of command.
+   * @see In addition to the above, [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions} can also be specified.
    */
 
   // os.exec {{{
@@ -295,7 +330,7 @@
     var FN = 'os.exec';
     if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
     if (!isSolidString(command)) throwErrNonStr(FN, command);
 
     var isDryRun = obtain(options, 'isDryRun', false);
@@ -369,7 +404,7 @@
     var FN = 'os.execSync';
     if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
 
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
     if (!isSolidString(command)) throwErrNonStr(FN, command);
 
     var isDryRun = obtain(options, 'isDryRun', false);
@@ -494,10 +529,9 @@
    * @returns {number|string} - Returns 0 except when options.isDryRun is true.
    */
   os.run = function (cmdStr, args, options) {
-    var FN = 'os.run';
-    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    // var FN = 'os.run';
 
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
 
     return _shRun(command, objAdd({}, options, { waits: false }));
   }; // }}}
@@ -541,14 +575,13 @@
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {typeShRunOptions} [options] - Optional parameters.
+   * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions}  and [typeShRunOptions]{@link https://docs.tuckn.net/WshOS/docs/global.html#typeShRunOptions}.
    * @returns {number|string} - Returns code from the app except when options.isDryRun is true.
    */
   os.runSync = function (cmdStr, args, options) {
-    var FN = 'os.runSync';
-    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
+    // var FN = 'os.runSync';
 
-    var command = os.convToCmdCommand(cmdStr, args, options);
+    var command = os.convToCmdlineStr(cmdStr, args, options);
     return _shRun(command, objAdd({}, options, { waits: true }));
   }; // }}}
 

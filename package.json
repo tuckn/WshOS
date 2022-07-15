@@ -1,7 +1,7 @@
 {
   "name": "@tuckn/WshOS",
   "description": "Adds some useful functions that handles Windows OS into WSH (Windows Script Host).",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "author": "Tuckn <tuckn333@gmail.com>",
   "funding": {
     "type": "github",
@@ -59,10 +59,10 @@
     "test:System:setStrToClipboardAO": ".\\scripts\\Test System -t setStrToClipboardAO$",
     "test:System:getStrFromClipboard": ".\\scripts\\Test System -t getStrFromClipboard$",
     "test:System": ".\\scripts\\Test System",
-    "test:Exec:surroundPath": ".\\scripts\\Test Exec -t surroundPath$",
+    "test:Exec:surroundCmdArg": ".\\scripts\\Test Exec -t surroundCmdArg$",
     "test:Exec:escapeForCmd": ".\\scripts\\Test Exec -t escapeForCmd$",
     "test:Exec:joinCmdArgs": ".\\scripts\\Test Exec -t joinCmdArgs$",
-    "test:Exec:convToCmdCommand": ".\\scripts\\Test Exec -t convToCmdCommand$",
+    "test:Exec:convToCmdlineStr": ".\\scripts\\Test Exec -t convToCmdlineStr$",
     "test:Exec:dryRun": ".\\scripts\\Test Exec -t dryRun$",
     "test:Exec:exec": ".\\scripts\\Test Exec -t \"^^exec, \"",
     "test:Exec:execSync": ".\\scripts\\Test Exec -t \"^^execSync, \"",
