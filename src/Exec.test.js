@@ -52,63 +52,88 @@ describe('Exec', function () {
 
   var noneStrVals = [true, false, undefined, null, 0, 1, NaN, Infinity, [], {}];
 
-  test('surroundPath', function () {
-    var surroundPath = os.surroundPath;
-
-    var hasSpacePath = 'C:\\Program Files';
-    expect(surroundPath(hasSpacePath)).toBe('"' + hasSpacePath + '"');
-
-    var noSpacePath = 'C:\\Windows\\System32\\notepad.exe';
-    expect(surroundPath(noSpacePath)).toBe(noSpacePath);
-
-    var wQuotationPath = '"C:\\Program Files (x86)\\Windows NT"';
-    expect(surroundPath(wQuotationPath)).toBe(wQuotationPath);
-
-    var jpPath = 'D:\\2011-01-01家族で初詣';
-    expect(surroundPath(jpPath)).toBe('"' + jpPath + '"');
-
-    var smbPath = '\\\\MyNAS\\Multimedia';
-    expect(surroundPath(smbPath)).toBe(smbPath);
-
-    var hasSpaceSmbPath = '"\\\\192.168.12.34\\Public\\最新資料.xlsx"';
-    expect(surroundPath(hasSpaceSmbPath)).toBe(hasSpaceSmbPath);
+  test('surroundCmdArg', function () {
+    var surroundCmdArg = os.surroundCmdArg;
 
     noneStrVals.forEach(function (val) {
-      expect(_cb(surroundPath, val)).toThrowError();
+      expect(_cb(surroundCmdArg, val)).toThrowError();
     });
+
+    var hasSpacePath = 'C:\\Program Files';
+    expect(surroundCmdArg(hasSpacePath)).toBe('"' + hasSpacePath + '"');
+
+    var noSpacePath = 'C:\\Windows\\System32\\notepad.exe';
+    expect(surroundCmdArg(noSpacePath)).toBe(noSpacePath);
+
+    var wQuotationPath = '"C:\\Program Files (x86)\\Windows NT"';
+    expect(surroundCmdArg(wQuotationPath)).toBe(wQuotationPath);
+
+    var jpPath = 'D:\\2011-01-01家族で初詣';
+    expect(surroundCmdArg(jpPath)).toBe('"' + jpPath + '"');
+
+    var smbPath = '\\\\MyNAS\\Multimedia';
+    expect(surroundCmdArg(smbPath)).toBe(smbPath);
+
+    var hasSpaceSmbPath = '"\\\\192.168.12.34\\Public\\最新資料_12.xlsx"';
+    expect(surroundCmdArg(hasSpaceSmbPath)).toBe(hasSpaceSmbPath);
+
+    // Non path string
+    expect(surroundCmdArg('abcd1234')).toBe('abcd1234');
+    expect(surroundCmdArg('abcd 1234')).toBe('"abcd 1234"');
+    expect(surroundCmdArg('あいうえお')).toBe('"あいうえお"');
+
+    // A command control character
+    expect(surroundCmdArg('|')).toBe('|');
+    expect(surroundCmdArg('>')).toBe('>');
+    expect(surroundCmdArg('1> "C:\\logs.txt"')).toBe('"1> "C:\\logs.txt""');
+    // Inner quoted
+    expect(surroundCmdArg('-p"My p@ss wo^d"')).toBe('-p"My p@ss wo^d"');
+    expect(surroundCmdArg('1>"C:\\logs.txt"')).toBe('1>"C:\\logs.txt"');
   });
 
   test('escapeForCmd', function () {
     var escapeForCmd = os.escapeForCmd;
 
+    var errVals = [true, false, undefined, null, [1], { a: 'A' }];
+    errVals.forEach(function (val) {
+      expect(_cb(escapeForCmd, val)).toThrowError();
+    });
+
     expect(escapeForCmd('abcd1234')).toBe('abcd1234');
-    expect(escapeForCmd('abcd 1234')).toBe('"abcd 1234"');
-    expect(escapeForCmd('あいうえお')).toBe('"あいうえお"');
+    expect(escapeForCmd('abcd 1234')).toBe('abcd 1234');
+    expect(escapeForCmd('あいうえお')).toBe('あいうえお');
     expect(escapeForCmd('tag=R&B')).toBe('tag=R^&B');
-    expect(escapeForCmd('/RegExp="^(A|The) $"')).toBe('"/RegExp=\\"^^(A^|The) $\\""');
+    expect(escapeForCmd(300)).toBe('300');
+
+    // Stdout -> Not escape
+    expect(escapeForCmd('>')).toBe('>');
+    expect(escapeForCmd('1>')).toBe('1>');
+    expect(escapeForCmd('2>&1')).toBe('2>&1');
+
+    expect(escapeForCmd('<')).toBe('<');
+    expect(escapeForCmd('|')).toBe('|');
+    expect(escapeForCmd('foo|bar')).toBe('foo^|bar');
+
+    expect(escapeForCmd('/RegExp="^(A|The) $"')).toBe('/RegExp=\\"^^(A^|The) $\\"');
     expect(escapeForCmd('<%^[yyyy|yy]-MM-DD%>')).toBe('^<%^^[yyyy^|yy]-MM-DD%^>');
 
-    var hasSpacePath = 'C:\\Program Files';
-    expect(escapeForCmd(hasSpacePath)).toBe('"' + hasSpacePath + '"');
+    // Path
+    expect(escapeForCmd('C:\\Program Files')).toBe('C:\\Program Files');
 
     var noSpacePath = 'C:\\Windows\\System32\\notepad.exe';
     expect(escapeForCmd(noSpacePath)).toBe(noSpacePath);
 
     var wQuotationPath = '"C:\\Program Files (x86)\\Windows NT"';
-    expect(escapeForCmd(wQuotationPath)).toBe('"\\"C:\\Program Files (x86)\\Windows NT\\""');
-
-    expect(escapeForCmd('>')).toBe('^>'); // Oops! Use joinCmdArgs
-
-    expect(escapeForCmd(300)).toBe('300');
-
-    var errVals = [true, false, undefined, null, [1], { a: 'A' }];
-    errVals.forEach(function (val) {
-      expect(_cb(escapeForCmd, val)).toThrowError();
-    });
+    expect(escapeForCmd(wQuotationPath)).toBe('\\"C:\\Program Files (x86)\\Windows NT\\"');
   });
 
   test('joinCmdArgs', function () {
     var joinCmdArgs = os.joinCmdArgs;
+
+    var noneArray = [true, false, undefined, null, 0, 1, NaN, Infinity, '', {}];
+    noneArray.forEach(function (val) {
+      expect(joinCmdArgs(val)).toBe('');
+    });
 
     // String
     var argsStr = '//nologo "C:\\My Code\\test.wsf" -t Test';
@@ -138,6 +163,16 @@ describe('Exec', function () {
       + '^<%^^[yyyy^|yy]-MM-DD%^>'
     );
 
+    expect(joinCmdArgs(args1, { escapes: false })).toBe(''
+      + '"C:\\Program Files (x86)\\Hoge\\foo.exe" '
+      + '1>&2 '
+      + 'C:\\Users\\Tuckn\\err.log '
+      + '| '
+      + 'tag=R&B '
+      + '/RegExp="^(A|The) $" '
+      + '<%^[yyyy|yy]-MM-DD%>'
+    );
+
     var args2 = [
       'D:\\俺のフォルダ\\Hoge\\foo.exe',
       '>>',
@@ -155,74 +190,79 @@ describe('Exec', function () {
     );
 
     expect(joinCmdArgs(args2, { escapes: false })).toBe(''
-      + 'D:\\俺のフォルダ\\Hoge\\foo.exe '
+      + '"D:\\俺のフォルダ\\Hoge\\foo.exe" '
       + '>> '
       + 'E:\\Tuckn\\bar.exe '
       + '2>>&1 '
-      + '"piyo piyo.cmd" > out.txt'
+      + '""piyo piyo.cmd" > out.txt"' // Oops! surrounded whole
     );
+  });
+
+  test('convToCmdlineStr', function () {
+    var convToCmdlineStr = os.convToCmdlineStr;
+    var command, args;
 
     var noneArray = [true, false, undefined, null, 0, 1, NaN, Infinity, '', {}];
     noneArray.forEach(function (val) {
-      expect(joinCmdArgs(val)).toBe('');
+      expect(_cb(os.convToCmdlineStr, val)).toThrowError();
     });
-  });
 
-  test('convToCmdCommand', function () {
-    var convToCmdCommand = os.convToCmdCommand;
-    var command, args;
-
-    command = convToCmdCommand(NET);
+    command = convToCmdlineStr(NET);
     expect(command).toBe(NET);
 
-    command = convToCmdCommand(NET + ' use');
+    command = convToCmdlineStr(NET + ' use');
     expect(command).toBe('"' + NET + ' use"'); // Oops! Invalid command!
 
-    command = convToCmdCommand(NET, ['use']);
+    command = convToCmdlineStr(NET, ['use']);
     expect(command).toBe(NET + ' use'); // OK! Executable command
 
-    command = convToCmdCommand(NET, ['use', '/delete']); // Array is OK
+    command = convToCmdlineStr(NET, ['use', '/delete']); // Array is OK
     expect(command).toBe(NET + ' use /delete');
 
-    command = convToCmdCommand(NET, 'use /delete'); // String is OK
+    command = convToCmdlineStr(NET, 'use /delete'); // String is OK
     expect(command).toBe(NET + ' use /delete');
 
-    command = convToCmdCommand(NET, { args: ['use', '/delete'] }); // Object is NG
+    command = convToCmdlineStr(NET, { args: ['use', '/delete'] }); // Object is NG
     expect(command).toBe(NET);
 
     // Option (in CommandPrompt)
-    command = convToCmdCommand(NET, ['use'], { shell: true });
+    command = convToCmdlineStr(NET, ['use'], { shell: true });
     expect(command).toBe(CMD + ' /S /C"' + NET + ' use"');
 
-    command = convToCmdCommand(NET, 'use', { shell: true });
+    command = convToCmdlineStr(NET, 'use', { shell: true });
     expect(command).toBe(CMD + ' /S /C"' + NET + ' use"');
 
-    command = convToCmdCommand(NET, 'use', { shell: true, closes: false });
+    command = convToCmdlineStr(NET, 'use', { shell: true, closes: false });
     expect(command).toBe(CMD + ' /S /K"' + NET + ' use"');
 
     // Surrounded with double quotations
-    command = convToCmdCommand('D:\\My Apps\\test.exe');
+    command = convToCmdlineStr('D:\\My Apps\\test.exe');
     expect(command).toBe('"D:\\My Apps\\test.exe"'); // surrounded
 
-    command = convToCmdCommand('"D:\\My Apps\\test.exe"');
+    command = convToCmdlineStr('"D:\\My Apps\\test.exe"');
     expect(command).toBe('"D:\\My Apps\\test.exe"'); // No surrounded
 
-    command = convToCmdCommand('D:\\My Apps\\test.exe', ['-n', 'Tuckn']);
+    command = convToCmdlineStr('D:\\My Apps\\test.exe', ['-n', 'Tuckn']);
     expect(command).toBe('"D:\\My Apps\\test.exe" -n Tuckn'); // Surrounded
 
-    command = convToCmdCommand('D:\\Apps\\test.exe', ['-n', 'Tuckn']);
+    command = convToCmdlineStr('D:\\Apps\\test.exe', ['-n', 'Tuckn']);
     expect(command).toBe('D:\\Apps\\test.exe -n Tuckn'); // No surrounded
 
     // Escape
     // Array arguments is parsed
-    command = convToCmdCommand('D:\\My Apps\\test.exe',
-      ['/RegExp="^(A|The) $"', '-f', 'C:\\My Data\\img.doc']);
+    command = convToCmdlineStr('D:\\My Apps\\test.exe', [
+      '/RegExp="^(A|The) $"',
+      '-f',
+      'C:\\My Data\\img.doc'
+    ]);
     expect(command).toBe('"D:\\My Apps\\test.exe"'
       + ' "/RegExp=\\"^^(A^|The) $\\"" -f "C:\\My Data\\img.doc"'); // executable!
 
     // String arguments is not parsed
-    command = convToCmdCommand('D:\\My Apps\\test.exe',
-      '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc');
+    command = convToCmdlineStr(
+      'D:\\My Apps\\test.exe',
+      '/RegExp="^(A|The) $" -f C:\\My Data\\img.doc'
+    );
     expect(command).toBe('"D:\\My Apps\\test.exe"'
       + ' /RegExp="^(A|The) $" -f C:\\My Data\\img.doc'); // Not executable!
 
@@ -236,7 +276,7 @@ describe('Exec', function () {
       '<%^[yyyy|yy]-MM-DD%>'
     ];
 
-    command = convToCmdCommand(NET, args);
+    command = convToCmdlineStr(NET, args);
     expect(command).toBe(NET
       + ' 1>&2'
       + ' "C:\\My Logs\\Tuckn\\err.log"' // Surrounded
@@ -246,7 +286,7 @@ describe('Exec', function () {
       + ' ^<%^^[yyyy^|yy]-MM-DD%^>'
     );
 
-    command = convToCmdCommand(NET, args, { shell: true });
+    command = convToCmdlineStr(NET, args, { shell: true });
     expect(command).toBe(CMD + ' /S /C"' + NET
       + ' 1>&2'
       + ' "C:\\My Logs\\Tuckn\\err.log"' // Surrounded
@@ -257,20 +297,15 @@ describe('Exec', function () {
       + '"'
     );
 
-    command = convToCmdCommand(NET, args, { escapes: false });
+    command = convToCmdlineStr(NET, args, { escapes: false });
     expect(command).toBe(NET
       + ' 1>&2'
-      + ' C:\\My Logs\\Tuckn\\err.log' // No surrounded
+      + ' "C:\\My Logs\\Tuckn\\err.log"' // No surrounded
       + ' |'
       + ' tag=R&B' // No escaped
       + ' /RegExp="^(A|The) $"'
       + ' <%^[yyyy|yy]-MM-DD%>'
     );
-
-    var noneArray = [true, false, undefined, null, 0, 1, NaN, Infinity, '', {}];
-    noneArray.forEach(function (val) {
-      expect(_cb(os.convToCmdCommand, val)).toThrowError();
-    });
   });
 
   test('dryRun', function () {
@@ -279,16 +314,19 @@ describe('Exec', function () {
     var retVal;
     var args;
 
+    noneStrVals.forEach(function (val) {
+      expect(_cb(os.exec, val)).toThrowError();
+    });
+
     retVal = os.exec('mkdir', [tmpPath], objAdd(op, { shell: true }));
-    expect(retVal).toBe('dry-run [os.exec]: '
-      + CMD + ' /S /C"mkdir ' + tmpPath + '"'
+    expect(retVal).toBe('dry-run [os.exec]: ' + CMD + ' /S /C"mkdir ' + tmpPath + '"'
     );
 
     args = ['//nologo', '//job:withErr', mockWsfCLI];
 
     retVal = os.exec(CSCRIPT, args, op);
     expect(retVal).toContain(
-      CMD + ' /S /C"' + CSCRIPT + ' ' + args.join(' ') + '"'
+      CMD + ' /S /C"' + CSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
     retVal = os.exec(PING, '127.0.0.1', op);
@@ -301,7 +339,7 @@ describe('Exec', function () {
 
     retVal = os.execSync(CSCRIPT, args, op);
     expect(retVal).toContain(
-      CMD + ' /S /C"' + CSCRIPT + ' ' + args.join(' ') + '"'
+      CMD + ' /S /C"' + CSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
     retVal = os.run('mkdir', [tmpPath], objAdd(op, { shell: true }));
@@ -314,18 +352,18 @@ describe('Exec', function () {
 
     retVal = os.run(WSCRIPT, ['//job:autoQuit1', mockWsfGUI], op);
     expect(retVal).toContain(
-      CMD + ' /S /C"' + WSCRIPT + ' ' + args.join(' ') + '"'
+      CMD + ' /S /C"' + WSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
     retVal = os.runSync(WSCRIPT, args, op);
     expect(retVal).toContain(
-      CMD + ' /S /C"' + WSCRIPT + ' ' + args.join(' ') + '"'
+      CMD + ' /S /C"' + WSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
     args = ['/D', tmpPath + '-symlink', tmpPath];
 
     retVal = os.runAsAdmin('mklink', args, objAdd(op, { shell: true }));
-    expect(retVal).toContain(CMD + ' /S /C"mklink ' + args.join(' ') + '"');
+    expect(retVal).toContain(CMD + ' /S /C"mklink ' + os.joinCmdArgs(args) + '"');
   });
 
   test('exec, CMD-Command, shell-true', function () {
@@ -347,10 +385,6 @@ describe('Exec', function () {
     // Cleans
     fso.DeleteFolder(tmpPath, CD.fso.force.yes);
     expect(fso.FolderExists(tmpPath)).toBe(false);
-
-    noneStrVals.forEach(function (val) {
-      expect(_cb(os.exec, val)).toThrowError();
-    });
   });
 
   test('exec, executingFile', function () {

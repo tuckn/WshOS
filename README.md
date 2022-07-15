@@ -96,7 +96,7 @@ os.cmdCodeset(); // 'shift_jis'
 os.writeLogEvent.error('Error Log');
 // Logs the error event in Windows Event Log.
 
-os.surroundPath('C:\\Program Files');
+os.surroundCmdArg('C:\\Program Files');
 // Returns: '"C:\\Program Files"'
 
 os.escapeForCmd('/RegExp="^(A|The) $"');
