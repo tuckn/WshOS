@@ -194,7 +194,7 @@
     }
 
     try {
-      var iRetVal = os.runSync(mainCmd, args, { winStyle: 'hidden' });
+      var iRetVal = os.shRunSync(mainCmd, args, { winStyle: 'hidden' });
 
       if (iRetVal !== CD.runs.ok) {
         throw new Error('Error [ExitCode is not Ok] "' + iRetVal + '"\n');
@@ -227,7 +227,7 @@
     var args = ['use', letter + ':', '/delete'];
 
     try {
-      var iRetVal = os.runSync(mainCmd, args, {
+      var iRetVal = os.shRunSync(mainCmd, args, {
         shell: false,
         winStyle: 'hidden'
       });
@@ -534,7 +534,7 @@ WScript.Shell.Exec("net user NewUserName UsersPassword /ADD /Y")
   StdErr: "システム エラー 5 が発生しました。
   アクセスが拒否されました。"
        */
-      var iRetVal = os.runSync(mainCmd, args, {
+      var iRetVal = os.shRunSync(mainCmd, args, {
         shell: false,
         winStyle: 'hidden'
       });
@@ -585,7 +585,7 @@ WScript.Shell.Exec("net localgroup Administrators UserName /ADD /Y")
     ken。
   NET HELPMSG 3783 と入力すると、より詳しい説明が得られます。"
        */
-      var iRetVal = os.runSync(mainCmd, args, {
+      var iRetVal = os.shRunSync(mainCmd, args, {
         shell: false,
         winStyle: 'hidden'
       });
@@ -630,7 +630,7 @@ net user UserName /delete
   StdErr: "ユーザー名が見つかりません。
     NET HELPMSG 2221 と入力すると、より詳しい説明が得られます。"
        */
-      var iRetVal = os.runSync(mainCmd, args, {
+      var iRetVal = os.shRunSync(mainCmd, args, {
         shell: false,
         winStyle: 'hidden'
       });

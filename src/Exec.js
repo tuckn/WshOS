@@ -190,7 +190,7 @@
   /**
    * @typedef {object} typeConvToCommandOptions
    * @property {boolean} [shell=false] - Wraps with CMD.EXE
-   * @property {boolean} [closes=true] - /C (continue) or /K (kill)
+   * @property {boolean} [closes=true] - /C (Close?) or /K (Keep?)
    * @property {boolean} [escapes=true] - Escapes the arguments.
    */
 
@@ -265,187 +265,6 @@
     return command;
   }; // }}}
 
-  /**
-   * @typedef {typeConvToCommandOptions} typeOsExecOptions
-   * @property {boolean} [isDryRun=false] - No execute, returns the string of command.
-   * @see In addition to the above, [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions} can also be specified.
-   */
-
-  // os.exec {{{
-  /**
-   * The object returnning from Wsh.OS.shExec ({@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}).
-   *
-   * @typedef {object} typeExecObject
-   * @property {number} ExitCode
-   * @property {number} ProcessID
-   * @property {number} Status
-   * @property {object} StdOut
-   * @property {object} StdIn
-   * @property {object} StdErr
-   * @property {function} Terminate
-   */
-
-  /**
-   * Asynchronously executes the command with WScript.Shell.Exec. Note that a DOS window is always displayed. {@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}
-   *
-   * @example
-   * var os = Wsh.OS;
-   *
-   * // Ex.1 CMD-command
-   * // Throws a Error. `mkdir` is the CMD command
-   * os.exec('mkdir', 'D:\\Temp');
-   *
-   * // With the `shell` option
-   * var oExec1 = os.exec('mkdir', 'D:\\Temp1', { shell: true });
-   * console.log(oExec1.ExitCode); // 0 (always)
-   *
-   * while (oExec1.Status == 0) WScript.Sleep(300); // Waiting the finished
-   * console.log(oExec1.Status); // 1 (It means finished)
-   * fso.FolderExists('D:\\Temp1'); // Returns: true
-   *
-   * // Ex.2 Exe-file
-   * var oExec2 = os.exec('ping.exe', ['127.0.0.1']);
-   * console.log(oExec2.ExitCode); // 0 (always)
-   *
-   * while (oExec2.Status == 0) WScript.Sleep(300); // Waiting the finished
-   * console.log(oExec2.Status); // 1 (It means finished)
-   *
-   * var result = oExec2.StdOut.ReadAll();
-   * console.log(result); // Outputs the result of ping 127.0.0.1
-   *
-   * // Ex.3 Dry Run
-   * var cmd = os.exec('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
-   * console.log(cmd);
-   * // Outputs:
-   * // dry-run [os.exec]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
-   * fso.FolderExists('D:\\Temp3'); // Returns: false
-   * @function exec
-   * @memberof Wsh.OS
-   * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
-   * @param {(string[]|string)} [args] - The arguments.
-   * @param {typeOsExecOptions} [options] - Optional parameters.
-   * @returns {typeExecObject|string} - If options.isDryRun is true, returns string.
-   */
-  os.exec = function (cmdStr, args, options) {
-    var FN = 'os.exec';
-    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
-
-    var command = os.convToCmdlineStr(cmdStr, args, options);
-    if (!isSolidString(command)) throwErrNonStr(FN, command);
-
-    var isDryRun = obtain(options, 'isDryRun', false);
-    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
-
-    try {
-      /**
-       * @function Exec
-       * @memberof Wsh.Shell
-       * @param {string} strCommand
-       * @returns {typeExecObject}
-       */
-      return sh.Exec(command);
-    } catch (e) {
-      throw new Error(insp(e) + '\n'
-        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
-        + '  command: ' + command);
-    }
-  }; // }}}
-
-  // os.execSync {{{
-  /**
-   * @typedef {object} typeExecSyncReturn
-   * @property {number} exitCode - There are applications that return 1 (NG) even if the processing is successful
-   * @property {string} stdout
-   * @property {string} stderr
-   * @property {boolean} error
-   */
-
-  /**
-   * Synchronize of {@link Wsh.OS.exec}
-   *
-   * @example
-   * var os = Wsh.OS;
-   *
-   * // Ex1. CMD-command
-   * // Throws a Error. `mkdir` is the CMD command
-   * os.execSync('mkdir', 'D:\\Temp');
-   *
-   * // With the `shell` option
-   * var retObj1 = os.execSync('mkdir', 'D:\\Temp', { shell: true });
-   * console.dir(retObj1);
-   * // Outputs: {
-   * //   exitCode: 0,
-   * //   stdout: "",
-   * //   stderr: "",
-   * //   error: false };
-   *
-   * // Ex2. Exe-file
-   * var retObj2 = os.execSync('ping.exe', ['127.0.0.1']);
-   * console.dir(retObj2);
-   * // Outputs: {
-   * //   exitCode: 0,
-   * //   stdout: <The result of ping 127.0.0.1>,
-   * //   stderr: "",
-   * //   error: false };
-   *
-   * // Ex.3 Dry Run
-   * var cmd = os.execSync('ping.exe', '127.0.0.1', { isDryRun: true });
-   * console.log(cmd);
-   * // Outputs:
-   * // dry-run [os.execSync]: C:\Windows\System32\cmd.exe /S /C"C:\Windows\System32\PING.EXE 127.0.0.1"
-   * @function execSync
-   * @memberof Wsh.OS
-   * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
-   * @param {(string[]|string)} [args] - The arguments.
-   * @param {typeOsExecOptions} [options] - Optional parameters.
-   * @returns {typeExecSyncReturn|string} - If options.isDryRun is true, returns string.
-   */
-  os.execSync = function (cmdStr, args, options) {
-    var FN = 'os.execSync';
-    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
-
-    var command = os.convToCmdlineStr(cmdStr, args, options);
-    if (!isSolidString(command)) throwErrNonStr(FN, command);
-
-    var isDryRun = obtain(options, 'isDryRun', false);
-    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
-
-    var oExec;
-    var stdout = '';
-    var stderr = '';
-    var readSize = 4096;
-
-    /** The problem of Exec Stream. {@link https://social.msdn.microsoft.com/Forums/ja-JP/da5a0366-6446-49f0-b4e2-adfbd4314aac/vba12391wsh12434exec123912345526045261781239832066201023090635469?forum=vbajp|Microsoft Forums}, {@link https://srad.jp/~IR.0-4/journal/572274/|Ref} */
-    try {
-      oExec = sh.Exec(command);
-
-      // @note .Status -> 0:Processing, 1:Finished
-      while (oExec.Status === 0) {
-        stdout += oExec.StdOut.Read(readSize);
-        stderr += oExec.StdErr.Read(readSize);
-        WScript.Sleep(300);
-      }
-      // Suck out the remnants
-      while (!oExec.StdOut.AtEndOfStream) {
-        stdout += oExec.StdOut.Read(readSize);
-      }
-      while (!oExec.StdOut.AtEndOfStream) {
-        stdout += oExec.StdErr.Read(readSize);
-      }
-    } catch (e) {
-      throw new Error(insp(e) + '\n'
-        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
-        + '  command: ' + command);
-    }
-
-    return {
-      exitCode: oExec.ExitCode,
-      stdout: stdout,
-      stderr: stderr,
-      error: isSolidString(stderr)
-    };
-  }; // }}}
-
   // _shRun {{{
   /**
    * @typedef {typeOsExecOptions} typeShRunOptions
@@ -490,7 +309,7 @@
     }
   } // }}}
 
-  // os.run {{{
+  // os.shRun {{{
   /**
    * Asynchronously runs the application with WScript.Shell.Run. {@link https://docs.microsoft.com/ja-jp/previous-versions/windows/scripting/cc364421%28v%3dmsdn.10%29|WSH Run method}
    *
@@ -500,10 +319,10 @@
    *
    * // Ex1. CMD-command
    * // Throws a Error. `mkdir` is the CMD command
-   * os.run('mkdir', 'D:\\Temp1');
+   * os.shRun('mkdir', 'D:\\Temp1');
    *
    * // With the options
-   * os.run('mkdir', 'D:\\Temp1', { shell: true, winStyle: 'hidden' });
+   * os.shRun('mkdir', 'D:\\Temp1', { shell: true, winStyle: 'hidden' });
    * // Returns: Always 0
    *
    * while (!fso.FolderExists('D:\\Temp1')) { // Waiting the created
@@ -512,11 +331,11 @@
    * fso.FolderExists('D:\\Temp1'); // Returns: true
    *
    * // Ex2. Exe-file
-   * os.run('notepad.exe', ['D:\\Test2.txt'], { winStyle: 'activeMax' });
+   * os.shRun('notepad.exe', ['D:\\Test2.txt'], { winStyle: 'activeMax' });
    * // Returns: Always 0
    *
    * // Ex.3 Dry Run
-   * var cmd = os.run('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * var cmd = os.shRun('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
    * console.log(cmd);
    * // Outputs:
    * // dry-run [_shRun]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
@@ -528,17 +347,17 @@
    * @param {typeShRunOptions} [options] - Optional parameters.
    * @returns {number|string} - Returns 0 except when options.isDryRun is true.
    */
-  os.run = function (cmdStr, args, options) {
-    // var FN = 'os.run';
+  os.shRun = function (cmdStr, args, options) {
+    // var FN = 'os.shRun';
 
     var command = os.convToCmdlineStr(cmdStr, args, options);
 
     return _shRun(command, objAdd({}, options, { waits: false }));
   }; // }}}
 
-  // os.runSync {{{
+  // os.shRunSync {{{
   /**
-   * Synchronize of {@link Wsh.OS.run}
+   * Synchronize of {@link Wsh.OS.shRun}
    *
    * @example
    * var os = Wsh.OS;
@@ -546,10 +365,10 @@
    *
    * // Ex1. CMD-command
    * // Throws a Error. `mkdir` is the CMD command
-   * os.runSync('mkdir', 'D:\\Temp1');
+   * os.shRunSync('mkdir', 'D:\\Temp1');
    *
    * // With the options
-   * var retVal1 = os.runSync('mkdir', 'D:\\Temp1', {
+   * var retVal1 = os.shRunSync('mkdir', 'D:\\Temp1', {
    *   shell: true, winStyle: 'hidden'
    * });
    *
@@ -557,7 +376,7 @@
    * fso.FolderExists('D:\\Temp1'); // Returns: true
    *
    * // Ex2. Exe-file
-   * var retVal2 = os.runSync('notepad.exe', ['D:\\Test2.txt'], {
+   * var retVal2 = os.shRunSync('notepad.exe', ['D:\\Test2.txt'], {
    *   winStyle: 'activeMax'
    * });
    *
@@ -566,7 +385,7 @@
    * console.log(retVal2); // Outputs the number of the result code
    *
    * // Ex.3 Dry Run
-   * var cmd = os.runSync('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * var cmd = os.shRunSync('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
    * console.log(cmd);
    * // Outputs:
    * // dry-run [_shRun]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
@@ -578,11 +397,194 @@
    * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions}  and [typeShRunOptions]{@link https://docs.tuckn.net/WshOS/docs/global.html#typeShRunOptions}.
    * @returns {number|string} - Returns code from the app except when options.isDryRun is true.
    */
-  os.runSync = function (cmdStr, args, options) {
-    // var FN = 'os.runSync';
+  os.shRunSync = function (cmdStr, args, options) {
+    // var FN = 'os.shRunSync';
 
     var command = os.convToCmdlineStr(cmdStr, args, options);
     return _shRun(command, objAdd({}, options, { waits: true }));
+  }; // }}}
+
+  /**
+   * @typedef {typeConvToCommandOptions} typeOsExecOptions
+   * @property {boolean} [isDryRun=false] - No execute, returns the string of command.
+   * @see In addition to the above, [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions} can also be specified.
+   */
+
+  // os.shExec {{{
+  /**
+   * The object returnning from Wsh.OS.shExec ({@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}).
+   *
+   * @typedef {object} typeExecObject
+   * @property {number} ExitCode
+   * @property {number} ProcessID
+   * @property {number} Status
+   * @property {object} StdOut
+   * @property {object} StdIn
+   * @property {object} StdErr
+   * @property {function} Terminate
+   */
+
+  /**
+   * Asynchronously executes the command with WScript.Shell.Exec. Note that a DOS window is always displayed. {@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}
+   *
+   * @example
+   * var os = Wsh.OS;
+   *
+   * // Ex.1 CMD-command
+   * // Throws a Error. `mkdir` is the CMD command
+   * os.shExec('mkdir', 'D:\\Temp');
+   *
+   * // With the `shell` option
+   * var oExec1 = os.shExec('mkdir', 'D:\\Temp1', { shell: true });
+   * console.log(oExec1.ExitCode); // 0 (always)
+   *
+   * while (oExec1.Status == 0) WScript.Sleep(300); // Waiting the finished
+   * console.log(oExec1.Status); // 1 (It means finished)
+   * fso.FolderExists('D:\\Temp1'); // Returns: true
+   *
+   * // Ex.2 Exe-file
+   * var oExec2 = os.shExec('ping.exe', ['127.0.0.1']);
+   * console.log(oExec2.ExitCode); // 0 (always)
+   *
+   * while (oExec2.Status == 0) WScript.Sleep(300); // Waiting the finished
+   * console.log(oExec2.Status); // 1 (It means finished)
+   *
+   * var result = oExec2.StdOut.ReadAll();
+   * console.log(result); // Outputs the result of ping 127.0.0.1
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.shExec('mkdir', 'D:\\Temp3', { shell: true, isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [os.shExec]: C:\Windows\System32\cmd.exe /S /C"mkdir D:\Temp3"
+   * fso.FolderExists('D:\\Temp3'); // Returns: false
+   * @function exec
+   * @memberof Wsh.OS
+   * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
+   * @param {(string[]|string)} [args] - The arguments.
+   * @param {typeOsExecOptions} [options] - Optional parameters.
+   * @returns {typeExecObject|string} - If options.isDryRun is true, returns string.
+   */
+  os.shExec = function (cmdStr, args, options) {
+    var FN = 'os.shExec';
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
+
+    var command = os.convToCmdlineStr(cmdStr, args, options);
+    if (!isSolidString(command)) throwErrNonStr(FN, command);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
+
+    try {
+      /**
+       * @function Exec
+       * @memberof Wsh.Shell
+       * @param {string} strCommand
+       * @returns {typeExecObject}
+       */
+      return sh.Exec(command);
+    } catch (e) {
+      throw new Error(insp(e) + '\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
+        + '  command: ' + command);
+    }
+  }; // }}}
+
+  // os.shExecSync {{{
+  /**
+   * @typedef {object} typeExecSyncReturn
+   * @property {number} exitCode - There are applications that return 1 (NG) even if the processing is successful
+   * @property {string} command - The executed command line
+   * @property {string} stdout
+   * @property {string} stderr
+   * @property {boolean} error
+   */
+
+  /**
+   * Synchronize of {@link Wsh.OS.shExec}
+   *
+   * @example
+   * var os = Wsh.OS;
+   *
+   * // Ex1. CMD-command
+   * // Throws a Error. `mkdir` is the CMD command
+   * os.shExecSync('mkdir', 'D:\\Temp');
+   *
+   * // With the `shell` option
+   * var retObj1 = os.shExecSync('mkdir', 'D:\\Temp', { shell: true });
+   * console.dir(retObj1);
+   * // Outputs: {
+   * //   exitCode: 0,
+   * //   stdout: "",
+   * //   stderr: "",
+   * //   error: false };
+   *
+   * // Ex2. Exe-file
+   * var retObj2 = os.shExecSync('ping.exe', ['127.0.0.1']);
+   * console.dir(retObj2);
+   * // Outputs: {
+   * //   exitCode: 0,
+   * //   stdout: <The result of ping 127.0.0.1>,
+   * //   stderr: "",
+   * //   error: false };
+   *
+   * // Ex.3 Dry Run
+   * var cmd = os.shExecSync('ping.exe', '127.0.0.1', { isDryRun: true });
+   * console.log(cmd);
+   * // Outputs:
+   * // dry-run [os.shExecSync]: C:\Windows\System32\cmd.exe /S /C"C:\Windows\System32\PING.EXE 127.0.0.1"
+   * @function execSync
+   * @memberof Wsh.OS
+   * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
+   * @param {(string[]|string)} [args] - The arguments.
+   * @param {typeOsExecOptions} [options] - Optional parameters.
+   * @returns {typeExecSyncReturn|string} - If options.isDryRun is true, returns string.
+   */
+  os.shExecSync = function (cmdStr, args, options) {
+    var FN = 'os.shExecSync';
+    if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);
+
+    var command = os.convToCmdlineStr(cmdStr, args, options);
+    if (!isSolidString(command)) throwErrNonStr(FN, command);
+
+    var isDryRun = obtain(options, 'isDryRun', false);
+    if (isDryRun) return 'dry-run [' + FN + ']: ' + command;
+
+    var oExec;
+    var stdout = '';
+    var stderr = '';
+    var readSize = 4096;
+
+    /** The problem of Exec Stream. {@link https://social.msdn.microsoft.com/Forums/ja-JP/da5a0366-6446-49f0-b4e2-adfbd4314aac/vba12391wsh12434exec123912345526045261781239832066201023090635469?forum=vbajp|Microsoft Forums}, {@link https://srad.jp/~IR.0-4/journal/572274/|Ref} */
+    try {
+      oExec = sh.Exec(command);
+
+      // @note .Status -> 0:Processing, 1:Finished
+      while (oExec.Status === 0) {
+        stdout += oExec.StdOut.Read(readSize);
+        stderr += oExec.StdErr.Read(readSize);
+        WScript.Sleep(300);
+      }
+      // Suck out the remnants
+      while (!oExec.StdOut.AtEndOfStream) {
+        stdout += oExec.StdOut.Read(readSize);
+      }
+      while (!oExec.StdOut.AtEndOfStream) {
+        stdout += oExec.StdErr.Read(readSize);
+      }
+    } catch (e) {
+      throw new Error(insp(e) + '\n'
+        + '  at ' + FN + ' (' + MODULE_TITLE + ')\n'
+        + '  command: ' + command);
+    }
+
+    return {
+      command: command,
+      exitCode: oExec.ExitCode,
+      stdout: stdout,
+      stderr: stderr,
+      error: isSolidString(stderr)
+    };
   }; // }}}
 
   var _isAdmin = undefined;
@@ -602,7 +604,7 @@
 
     try {
       /** `net session` worked on from Windows XP to 10 */
-      var iRetVal = os.runSync(os.exefiles.net, ['session'], {
+      var iRetVal = os.shRunSync(os.exefiles.net, ['session'], {
         winStyle: 'hidden'
       });
       _isAdmin = iRetVal === CD.runs.ok;
@@ -639,7 +641,7 @@
    * @returns {void|string} - Returns undefined except when options.isDryRu is =true.
    */
   os.runAsAdmin = function (cmdStr, args, options) {
-    if (os.isAdmin()) return os.run(cmdStr, args, options);
+    if (os.isAdmin()) return os.shRun(cmdStr, args, options);
 
     var FN = 'os.runAsAdmin';
     if (!isSolidString(cmdStr)) throwErrNonStr(FN, cmdStr);

@@ -89,7 +89,7 @@ SchTasks.exe /Create /F /TN myTask /SC ONCE /ST 23:59 /IT /RL LIMITED /TR "C:\my
       if (runsWithHighest) {
         retVal = os.runAsAdmin(mainCmd, argsStr, runOptions);
       } else {
-        retVal = os.runSync(mainCmd, argsStr, runOptions);
+        retVal = os.shRunSync(mainCmd, argsStr, runOptions);
       }
 
       var isDryRun = obtain(options, 'isDryRun', false);
@@ -143,7 +143,7 @@ SchTasks.exe /Query /XML /TN myTask
   stdout: ""
   stderr: "エラー: 指定されたファイルが見つかりません。"
        */
-      var retVal = os.runSync(mainCmd, args, runOptions);
+      var retVal = os.shRunSync(mainCmd, args, runOptions);
 
       var isDryRun = obtain(options, 'isDryRun', false);
       if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
@@ -219,7 +219,7 @@ SchTasks.exe /Query /XML /TN myTask
     });
 
     try {
-      var retVal = os.execSync(mainCmd, args, runOptions);
+      var retVal = os.shExecSync(mainCmd, args, runOptions);
 
       var isDryRun = obtain(options, 'isDryRun', false);
       if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
@@ -268,7 +268,7 @@ SchTasks.exe /Query /XML /TN myTask
   stderr: ""
      */
     try {
-      var retVal = os.run(mainCmd, args, runOptions);
+      var retVal = os.shRun(mainCmd, args, runOptions);
 
       var isDryRun = obtain(options, 'isDryRun', false);
       if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;
@@ -329,7 +329,7 @@ SchTasks.exe /Delete /F /TN myTask
       if (runsWithHighest) {
         retVal = os.runAsAdmin(mainCmd, args, runOptions);
       } else {
-        retVal = os.runSync(mainCmd, args, runOptions);
+        retVal = os.shRunSync(mainCmd, args, runOptions);
       }
 
       if (isDryRun) return 'dry-run [' + FN + ']: ' + retVal;

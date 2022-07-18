@@ -568,7 +568,7 @@
     var tmpJsCode = 'while(true) WScript.Sleep(1000);';
     var tmpJsPath = os.writeTempText(tmpJsCode, '.js');
 
-    os.run(os.exefiles.wscript, [tmpJsPath]);
+    os.shRun(os.exefiles.wscript, [tmpJsPath]);
 
     var sWbemObjSet = os.WMI.getProcess(os.exefiles.wscript, {
       matchWords: [tmpJsPath] // tmpJsPath is the unique

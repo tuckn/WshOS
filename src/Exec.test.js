@@ -315,47 +315,47 @@ describe('Exec', function () {
     var args;
 
     noneStrVals.forEach(function (val) {
-      expect(_cb(os.exec, val)).toThrowError();
+      expect(_cb(os.shExec, val)).toThrowError();
     });
 
-    retVal = os.exec('mkdir', [tmpPath], objAdd(op, { shell: true }));
-    expect(retVal).toBe('dry-run [os.exec]: ' + CMD + ' /S /C"mkdir ' + tmpPath + '"'
+    retVal = os.shExec('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    expect(retVal).toBe('dry-run [os.shExec]: ' + CMD + ' /S /C"mkdir ' + tmpPath + '"'
     );
 
     args = ['//nologo', '//job:withErr', mockWsfCLI];
 
-    retVal = os.exec(CSCRIPT, args, op);
+    retVal = os.shExec(CSCRIPT, args, op);
     expect(retVal).toContain(
       CMD + ' /S /C"' + CSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
-    retVal = os.exec(PING, '127.0.0.1', op);
+    retVal = os.shExec(PING, '127.0.0.1', op);
     expect(retVal).toBe(
-      'dry-run [os.exec]: ' + CMD + ' /S /C"' + PING + ' 127.0.0.1"'
+      'dry-run [os.shExec]: ' + CMD + ' /S /C"' + PING + ' 127.0.0.1"'
     );
 
-    retVal = os.execSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    retVal = os.shExecSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
     expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
 
-    retVal = os.execSync(CSCRIPT, args, op);
+    retVal = os.shExecSync(CSCRIPT, args, op);
     expect(retVal).toContain(
       CMD + ' /S /C"' + CSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
-    retVal = os.run('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    retVal = os.shRun('mkdir', [tmpPath], objAdd(op, { shell: true }));
     expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
 
-    retVal = os.runSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
+    retVal = os.shRunSync('mkdir', [tmpPath], objAdd(op, { shell: true }));
     expect(retVal).toContain(CMD + ' /S /C"mkdir ' + tmpPath + '"');
 
     args = ['//job:autoQuit1', mockWsfGUI];
 
-    retVal = os.run(WSCRIPT, ['//job:autoQuit1', mockWsfGUI], op);
+    retVal = os.shRun(WSCRIPT, ['//job:autoQuit1', mockWsfGUI], op);
     expect(retVal).toContain(
       CMD + ' /S /C"' + WSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
 
-    retVal = os.runSync(WSCRIPT, args, op);
+    retVal = os.shRunSync(WSCRIPT, args, op);
     expect(retVal).toContain(
       CMD + ' /S /C"' + WSCRIPT + ' ' + os.joinCmdArgs(args) + '"'
     );
@@ -371,10 +371,10 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     // Non shell option -> Fail, because mkdir is CMD command
-    expect(_cb(os.exec, 'mkdir', [tmpPath])).toThrowError();
+    expect(_cb(os.shExec, 'mkdir', [tmpPath])).toThrowError();
     expect(fso.FolderExists(tmpPath)).toBe(false);
     // in CMD
-    var retObj = os.exec('mkdir', [tmpPath], { shell: true });
+    var retObj = os.shExec('mkdir', [tmpPath], { shell: true });
     expect(retObj.ExitCode).toBe(CD.runs.ok); // Always 0
 
     while (retObj.Status == 0) WScript.Sleep(300); // Waiting the finished
@@ -391,7 +391,7 @@ describe('Exec', function () {
     var oExec, stdOut, stdErr;
 
     // No Error Result
-    oExec = os.exec(CSCRIPT, ['//nologo', '//job:nonErr', mockWsfCLI]);
+    oExec = os.shExec(CSCRIPT, ['//nologo', '//job:nonErr', mockWsfCLI]);
 
     expect(oExec.ExitCode).toBe(CD.runs.ok); // Always: 0
     expect(isNumber(oExec.ProcessID)).toBe(true); // Random
@@ -409,7 +409,7 @@ describe('Exec', function () {
     expect(oExec.StdErr.ReadAll() === '').toBe(true); // empty after ReadAll
 
     // Error Result
-    oExec = os.exec(CSCRIPT, ['//nologo', '//job:withErr', mockWsfCLI]);
+    oExec = os.shExec(CSCRIPT, ['//nologo', '//job:withErr', mockWsfCLI]);
 
     expect(oExec.ExitCode).toBe(CD.runs.ok); // Always: 0
     expect(isNumber(oExec.ProcessID)).toBe(true); // Random
@@ -428,7 +428,7 @@ describe('Exec', function () {
   });
 
   test('exec, ping', function () {
-    var oExec = os.exec(PING, '127.0.0.1');
+    var oExec = os.shExec(PING, '127.0.0.1');
 
     expect(oExec.Status).toBe(0); // 0: Processing
 
@@ -445,10 +445,10 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     // Non shell option -> Fail, because mkdir is CMD command
-    expect(_cb(os.execSync, 'mkdir', [tmpPath])).toThrowError();
+    expect(_cb(os.shExecSync, 'mkdir', [tmpPath])).toThrowError();
     expect(fso.FolderExists(tmpPath)).toBe(false);
     // in CMD
-    var retObj = os.execSync('mkdir', [tmpPath], { shell: true });
+    var retObj = os.shExecSync('mkdir', [tmpPath], { shell: true });
     expect(fso.FolderExists(tmpPath)).toBe(true);
     expect(isPlainObject(retObj)).toBe(true); // A plain object
     expect(retObj.exitCode).toBe(CD.runs.ok); // OK: 0
@@ -461,20 +461,20 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     noneStrVals.forEach(function (val) {
-      expect(_cb(os.execSync, val)).toThrowError();
+      expect(_cb(os.shExecSync, val)).toThrowError();
     });
   });
 
   test('execSync, executingFile', function () {
     var retObj;
 
-    retObj = os.execSync(CSCRIPT, ['//nologo', '//job:withErr', mockWsfCLI]);
+    retObj = os.shExecSync(CSCRIPT, ['//nologo', '//job:withErr', mockWsfCLI]);
     expect(retObj.exitCode).toBe(CD.runs.err); // Error: 1
     expect(retObj.error).toBe(true);
     expect(retObj.stdout).toBe('StdOut Message');
     expect(retObj.stderr).toBe('StdErr Message');
 
-    retObj = os.execSync(CSCRIPT, ['//nologo', '//job:nonErr', mockWsfCLI]);
+    retObj = os.shExecSync(CSCRIPT, ['//nologo', '//job:nonErr', mockWsfCLI]);
     expect(retObj.exitCode).toBe(CD.runs.ok); // OK: 0
     expect(retObj.error).toBe(false);
     expect(retObj.stdout).toBe('StdOut Message');
@@ -488,10 +488,10 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     // Non shell option -> Fail, because mkdir is CMD command
-    expect(_cb(os.run, 'mkdir', [tmpPath])).toThrowError();
+    expect(_cb(os.shRun, 'mkdir', [tmpPath])).toThrowError();
     expect(fso.FolderExists(tmpPath)).toBe(false);
     // in CMD
-    rtnVal = os.run('mkdir', [tmpPath], { shell: true });
+    rtnVal = os.shRun('mkdir', [tmpPath], { shell: true });
     expect(rtnVal).toBe(CD.runs.ok); // Always 0
 
     while (!fso.FolderExists(tmpPath)) WScript.Sleep(300);
@@ -505,10 +505,10 @@ describe('Exec', function () {
   test('run, executingFile', function () {
     var rtnVal;
 
-    rtnVal = os.run(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
+    rtnVal = os.shRun(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
     expect(rtnVal).toBe(CD.runs.ok); // Always 0
 
-    rtnVal = os.run(WSCRIPT, ['//job:autoQuit1', mockWsfGUI]);
+    rtnVal = os.shRun(WSCRIPT, ['//job:autoQuit1', mockWsfGUI]);
     expect(rtnVal).toBe(CD.runs.ok); // Always 0
   });
 
@@ -519,7 +519,7 @@ describe('Exec', function () {
     pIDs = _getProcessIDs(NOTEPAD);
     expect(pIDs).toHaveLength(0);
 
-    rtnVal = os.run(NOTEPAD, [], { winStyle: 'hidden' });
+    rtnVal = os.shRun(NOTEPAD, [], { winStyle: 'hidden' });
     expect(rtnVal).toBe(CD.runs.ok);
 
     WScript.Sleep(3000); // Confirm hidden notepad.exe :-)
@@ -536,7 +536,7 @@ describe('Exec', function () {
     pIDs = _getProcessIDs(NOTEPAD);
     expect(pIDs).toHaveLength(0);
 
-    rtnVal = os.run(NOTEPAD, [], { winStyle: 'activeDef' });
+    rtnVal = os.shRun(NOTEPAD, [], { winStyle: 'activeDef' });
     expect(rtnVal).toBe(CD.runs.ok);
 
     WScript.Sleep(3000); // Confirm the state of notepad.exe
@@ -553,7 +553,7 @@ describe('Exec', function () {
     pIDs = _getProcessIDs(NOTEPAD);
     expect(pIDs).toHaveLength(0);
 
-    rtnVal = os.run(NOTEPAD, [], { winStyle: 'activeMin' });
+    rtnVal = os.shRun(NOTEPAD, [], { winStyle: 'activeMin' });
     expect(rtnVal).toBe(CD.runs.ok);
 
     WScript.Sleep(3000); // Confirm the state of notepad.exe
@@ -570,7 +570,7 @@ describe('Exec', function () {
     pIDs = _getProcessIDs(NOTEPAD);
     expect(pIDs).toHaveLength(0);
 
-    rtnVal = os.run(NOTEPAD, [], { winStyle: 'activeMax' });
+    rtnVal = os.shRun(NOTEPAD, [], { winStyle: 'activeMax' });
     expect(rtnVal).toBe(CD.runs.ok);
 
     WScript.Sleep(3000); // Confirm the state of notepad.exe
@@ -587,7 +587,7 @@ describe('Exec', function () {
     pIDs = _getProcessIDs(NOTEPAD);
     expect(pIDs).toHaveLength(0);
 
-    rtnVal = os.run(NOTEPAD, [], { winStyle: 'nonActive' });
+    rtnVal = os.shRun(NOTEPAD, [], { winStyle: 'nonActive' });
     expect(rtnVal).toBe(CD.runs.ok);
 
     WScript.Sleep(3000); // Confirm the state of notepad.exe
@@ -602,10 +602,10 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     // Non shell option -> Fail, because mkdir is CMD command
-    expect(_cb(os.runSync, 'mkdir', [tmpPath])).toThrowError();
+    expect(_cb(os.shRunSync, 'mkdir', [tmpPath])).toThrowError();
     expect(fso.FolderExists(tmpPath)).toBe(false);
     // in CMD
-    var rtnVal = os.runSync('mkdir', [tmpPath], { shell: true });
+    var rtnVal = os.shRunSync('mkdir', [tmpPath], { shell: true });
     expect(isNumber(rtnVal)).toBe(true); // A number
     expect(rtnVal).toBe(CD.runs.ok); // OK:0, Error:1
     expect(fso.FolderExists(tmpPath)).toBe(true);
@@ -614,17 +614,17 @@ describe('Exec', function () {
     expect(fso.FolderExists(tmpPath)).toBe(false);
 
     noneStrVals.forEach(function (val) {
-      expect(_cb(os.runSync, val)).toThrowError();
+      expect(_cb(os.shRunSync, val)).toThrowError();
     });
   });
 
   test('runSync, executingFile', function () {
     var rtnVal;
 
-    rtnVal = os.runSync(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
+    rtnVal = os.shRunSync(WSCRIPT, ['//job:autoQuit0', mockWsfGUI]);
     expect(rtnVal).toBe(CD.runs.ok);
 
-    rtnVal = os.runSync(WSCRIPT, ['//job:autoQuit1', mockWsfGUI]);
+    rtnVal = os.shRunSync(WSCRIPT, ['//job:autoQuit1', mockWsfGUI]);
     expect(rtnVal).toBe(CD.runs.err);
   });
 
