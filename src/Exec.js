@@ -74,17 +74,18 @@
     // Already quoted
     if (/^".*"$/.test(str)) return str;
 
-    // Inner quoted
-    // Ex1. Stdout: 1>"C:\\logs.txt"
-    // Ex2. 7-Zip password option: -p"My p@ss wo^d"
-    if (/^[A-Za-z0-9_>/=-]+(".+")?[A-Za-z0-9_&/=-]*$/.test(str)) return str;
-
     if (util.isASCII(str)) {
       if (!includes(str, ' ')) return str;
 
       // @Note CMD treats the ,=; as an argument delimiter
       // if (!/["&<>^|,=;]/.test(str)) return str;
     }
+
+    // Inner quoted
+    // Ex1. Stdout: 1>"D:\\My data\\logs.txt"
+    // Ex2. 7-Zip password option: -p"My p@ss wo^d", @"D:\excluded files.txt"
+    // @TODO This completion is low level ...
+    if (/^[A-Za-z0-9_@>/=-]+(".+")?[A-Za-z0-9_@&/=-]*$/.test(str)) return str;
 
     return '"' + str + '"';
   };
@@ -412,7 +413,7 @@
 
   // os.shExec {{{
   /**
-   * The object returnning from Wsh.OS.shExec ({@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}).
+   * The object returning from Wsh.OS.shExec ({@link https://msdn.microsoft.com/ja-jp/library/cc364375.aspx|WshScriptExec object}). When `options.shell: true` is specified, exitCode may not be accurate because this value is returned by CMD.
    *
    * @typedef {object} typeExecObject
    * @property {number} ExitCode
@@ -492,8 +493,10 @@
 
   // os.shExecSync {{{
   /**
+   *  The object returning from Wsh.OS.shExecSync. When `options.shell: true` is specified, exitCode may not be accurate because this value is returned by CMD.
+   *
    * @typedef {object} typeExecSyncReturn
-   * @property {number} exitCode - There are applications that return 1 (NG) even if the processing is successful
+   * @property {number} exitCode - There are applications that return 1 (NG) even if the processing is successful.
    * @property {string} command - The executed command line
    * @property {string} stdout
    * @property {string} stderr

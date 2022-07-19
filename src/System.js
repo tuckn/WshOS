@@ -112,7 +112,7 @@
     var enmSet = new Enumerator(sh.Environment('PROCESS'));
     var itm;
     var i = 0;
-    for (; ! enmSet.atEnd(); enmSet.moveNext()) {
+    for (; !enmSet.atEnd(); enmSet.moveNext()) {
       itm = enmSet.item();
 
       if (/^=/.test(itm) || !includes(itm, '=')) continue;
