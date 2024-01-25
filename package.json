@@ -9,7 +9,7 @@
   },
   "private": false,
   "license": "MIT",
-  "homepage": "https://docs.tuckn.net/WshOS",
+  "homepage": "https://tuckn.net/docs/WshOS/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tuckn/WshOS.git"

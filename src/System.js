@@ -126,7 +126,7 @@
 
   // os.envVars {{{
   /**
-   * Windows Environment Variables. `{@link Wsh.OS.getEnvVars}` execution result and the referer of `{@link https://docs.tuckn.net/WshModeJs/process.html#.env|process.env}`.
+   * Windows Environment Variables. `{@link Wsh.OS.getEnvVars}` execution result and the referer of `{@link https://tuckn.net/docs/WshModeJs/process.html#.env|process.env}`.
    *
    * @example
    * console.dir(Wsh.OS.envVars);
@@ -546,7 +546,7 @@
        *
        * @function LogEvent
        * @memberof Wsh.Shell
-       * @param {number} intType - The type of the event. See {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.logLevels.html|Wsh.Constants.logLevels}
+       * @param {number} intType - The type of the event. See {@link https://tuckn.net/docs/WshUtil/Wsh.Constants.logLevels.html|Wsh.Constants.logLevels}
        * @param {string} strMessage
        * @param {string} [strTarget]
        * @returns {void}

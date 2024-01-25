@@ -269,8 +269,8 @@
   // _shRun {{{
   /**
    * @typedef {typeOsExecOptions} typeShRunOptions
-   * @property {(number|string)} [winStyle="activeDef"] - See {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.windowStyles.html|Wsh.Constants.windowStyles}.
-   * @property {boolean} [waits=true] - See {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.waits.html|Wsh.Constants.waits}.
+   * @property {(number|string)} [winStyle="activeDef"] - See {@link https://tuckn.net/docs/WshUtil/Wsh.Constants.windowStyles.html|Wsh.Constants.windowStyles}.
+   * @property {boolean} [waits=true] - See {@link https://tuckn.net/docs/WshUtil/Wsh.Constants.waits.html|Wsh.Constants.waits}.
    */
 
   /**
@@ -395,7 +395,7 @@
    * @memberof Wsh.OS
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments.
-   * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions}  and [typeShRunOptions]{@link https://docs.tuckn.net/WshOS/docs/global.html#typeShRunOptions}.
+   * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://tuckn.net/docs/WshOS/global.html#typeConvToCommandOptions}  and [typeShRunOptions]{@link https://tuckn.net/docs/WshOS/docs/global.html#typeShRunOptions}.
    * @returns {number|string} - Returns code from the app except when options.isDryRun is true.
    */
   os.shRunSync = function (cmdStr, args, options) {
@@ -408,7 +408,7 @@
   /**
    * @typedef {typeConvToCommandOptions} typeOsExecOptions
    * @property {boolean} [isDryRun=false] - No execute, returns the string of command.
-   * @see In addition to the above, [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions} can also be specified.
+   * @see In addition to the above, [typeConvToCommandOptions]{@link https://tuckn.net/docs/WshOS/global.html#typeConvToCommandOptions} can also be specified.
    */
 
   // os.shExec {{{

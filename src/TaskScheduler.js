@@ -43,7 +43,7 @@
    * @param {string} taskName - The Task name to create.
    * @param {string} cmdStr - The command to execute.
    * @param {(string[]|string)} [args] - The arguments for the command.
-   * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://docs.tuckn.net/WshOS/global.html#typeConvToCommandOptions}.
+   * @param {object} [options] - Optional parameters. See [typeConvToCommandOptions]{@link https://tuckn.net/docs/WshOS/global.html#typeConvToCommandOptions}.
    * @param {boolean} [options.runsWithHighest=false] - Run as Admin
    * @throws {string} - If an error occurs during command execution, or if the command exits with a value other than 0.
    * @throws {string} - If an error occurs during command execution, or if the command exits with a value other than 0.
@@ -451,7 +451,7 @@ SchTasks.exe /Delete /F /TN myTask
    * @memberof Wsh.OS.Task
    * @param {string} cmdStr - The executable file path or The command of Command-Prompt.
    * @param {(string[]|string)} [args] - The arguments for the command.
-   * @param {object} [options] - Optional parameters. See [OS.Task.create.options]{@link https://docs.tuckn.net/WshOS/Wsh.OS.Task.html#.create}.
+   * @param {object} [options] - Optional parameters. See [OS.Task.create.options]{@link https://tuckn.net/docs/WshOS/Wsh.OS.Task.html#.create}.
    * @returns {void}
    */
   os.Task.runTemporary = function (cmdStr, args, options) {

@@ -45,7 +45,7 @@
 
   // os.getDrivesInfo {{{
   /**
-   * Gets the Drives-collection of all Drive objects available on the local machine. See {@link https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/drives-property|Drives property} and {@link https://docs.tuckn.net/WshUtil/Wsh.Constants.driveTypes.html|Wsh.Constants.driveTypes}.}
+   * Gets the Drives-collection of all Drive objects available on the local machine. See {@link https://docs.microsoft.com/en-us/office/vba/language/reference/user-interface-help/drives-property|Drives property} and {@link https://tuckn.net/docs/WshUtil/Wsh.Constants.driveTypes.html|Wsh.Constants.driveTypes}.}
    *
    * @example
    * Wsh.OS.getDrivesInfo();

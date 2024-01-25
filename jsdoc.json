@@ -37,9 +37,9 @@
     "openGraph": {
       "title": "WshOS",
       "type": "website",
-      "image": "https://docs.tuckn.net/WshOS/img/openGraph-image.png",
+      "image": "https://tuckn.net/docs/WshOS/img/openGraph-image.png",
       "site_name": "@tuckn/WshOS",
-      "url": "https://docs.tuckn.net/WshOS"
+      "url": "https://tuckn.net/docs/WshOS/"
     },
     "meta": {
       "title": "WshOS",
